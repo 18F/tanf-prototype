@@ -19,6 +19,10 @@
 #
 # usage:  python3 tanf2json.py sec1_encr_fake.txt > /tmp/sec1_encr_fake.json
 #
+# XXX The fields here for the family/adult/child records are incomplete,
+#     and only section 1 has been stubbed out.  More work is required to
+#     make this parse all record types and all sections.
+#
 
 import sys
 import json
