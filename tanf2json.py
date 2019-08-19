@@ -31,6 +31,8 @@ import collections
 import sys
 import re
 
+
+# header records
 header_fields = {
 	"title": 6,
 	"calendarquarter": 5,
@@ -43,6 +45,7 @@ header_fields = {
 	"updateindicator": 1
 }
 
+# T1 records
 section1_familydata_fields = {
 	"recordtype": 2,
 	"reportingmonth": 6,
@@ -92,6 +95,7 @@ section1_familydata_fields = {
 	"blank": 39
 }
 
+# T2 records
 section1_adultdata_fields = {
 	"recordtype": 2,
 	"reportingmonth": 6,
@@ -102,8 +106,10 @@ section1_adultdata_fields = {
 	"socialsecuritynumber": 9,
 	"racehispanic": 1,
 	"racenativeamerican": 1
+	# XXX many more fields need to be added here
 }
 
+# T3 records
 section1_childdata_fields = {
 	"recordtype": 2,
 	"reportingmonth": 6,
@@ -113,8 +119,34 @@ section1_childdata_fields = {
 	"socialsecuritynumber": 9,
 	"racehispanic": 1,
 	"racenativeamerican": 1
+	# XXX many more fields need to be added here
 }
 
+# T4 records
+section2_closedcase_fields = {
+	"recordtype": 2,
+	# XXX many more fields need to be added here
+}
+
+# T5 records
+section2_closedperson_fields = {
+	"recordtype": 2,
+	# XXX many more fields need to be added here
+}
+
+# T6 records
+section2_aggregatedata_fields = {
+	"recordtype": 2,
+	# XXX many more fields need to be added here
+}
+
+# T7 records
+section2_familiesbystratum_fields = {
+	"recordtype": 2,
+	# XXX many more fields need to be added here
+}
+
+# trailer records
 trailer_fields = {
 	"title": 7,
 	"numrecords": 7,
@@ -171,6 +203,10 @@ tanfdata = {
 	'section1_familydata': [],
 	'section1_adultdata': [],
 	'section1_childdata': [],
+	'section2_closedcasedata': [],
+	'section2_closedpersondata': [],
+	'section3_aggregatedata': [],
+	'section4_familiesbystratumdata': [],
 	'trailer': ()
 }
 
@@ -192,6 +228,21 @@ with open ( sys.argv[1], "r") as f:
 			if tanfdata['header']['encryptionindicator'] == 'E':
 				child['socialsecuritynumber'] = decryptSsn(child['socialsecuritynumber'])
 			tanfdata['section1_childdata'].append(child)
+
+		elif re.match(r'^T4', line):
+			tanfdata['section2_closedcasedata'].append(parseFields(section2_closedcase_fields, line))
+
+		elif re.match(r'^T5', line):
+			person = parseFields(section2_closedperson_fields, line)
+			if tanfdata['header']['encryptionindicator'] == 'E':
+				person['socialsecuritynumber'] = decryptSsn(person['socialsecuritynumber'])
+			tanfdata['section2_closedpersondata'].append(person)
+
+		elif re.match(r'^T6', line):
+			tanfdata['section3_aggregatedata'].append(parseFields(section2_aggregatedata_fields, line))
+
+		elif re.match(r'^T7', line):
+			tanfdata['section4_familiesbystratumdata'].append(parseFields(section2_familiesbystratum_fields, line))
 
 		elif re.match(r'^HEADER', line):
 			tanfdata['header'] = parseFields(header_fields, line)
