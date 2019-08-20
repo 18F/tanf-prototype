@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 # 
 # This script parses the txt files that are sent by STT people to the TDRS
-# app and emits a json document.  The data format is documented here:  
-# https://www.acf.hhs.gov/ofa/resource/tanfedit/index#transmission-file-header
-# The fields are defined with the various *_fields dictionaries.
-# The keys are the json names for the fields, and the values are the size of
-# the fields in bytes.
+# app and emits a json document.
 #
 # Possible tricky bits:  
 #  1) We do not parse the fields at all, but just pull them
@@ -19,8 +15,7 @@
 #
 # usage:  python3 tanf2json.py sec1_encr_fake.txt > /tmp/sec1_encr_fake.json
 #
-# XXX The fields here for the family/adult/child records are incomplete,
-#     and only section 1 has been stubbed out.  More work is required to
+# XXX The fields here are incomplete.  More work is required to
 #     make this parse all record types and all sections.
 #
 
@@ -31,6 +26,12 @@ import collections
 import sys
 import re
 
+
+##########################################################################
+# This is where the record types are defined:  The keys are the json
+# names for the fields, and the values are the size of the fields in bytes.
+# The field sizes and names are derived from the documentation under
+# https://www.acf.hhs.gov/ofa/resource/tanfedit/index
 
 # header records
 header_fields = {
@@ -153,6 +154,11 @@ trailer_fields = {
 	"blank": 9
 }
 
+# The record type definitions end here.
+##########################################################################
+
+
+# This parses a particular record and gives back a dictionary
 def parseFields(fieldinfo, linestring):
 	fields = list(fieldinfo.keys())
 	fieldwidths = list(fieldinfo.values())
@@ -162,7 +168,7 @@ def parseFields(fieldinfo, linestring):
 	unpack = fieldstruct.unpack_from
 	parse = lambda line: tuple(s.decode() for s in unpack(line.encode()))
 
-	return dict(zip(fields,parse(linestring)))
+	return dict(zip(fields, parse(linestring)))
 
 
 # This is the simple subtitution cipher
@@ -253,4 +259,5 @@ with open ( sys.argv[1], "r") as f:
 		else:
 			print('could not figure out record type: ', line)
 
+# print what we found out as a json document
 print(json.dumps(tanfdata))
