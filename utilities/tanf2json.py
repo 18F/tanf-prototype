@@ -67,29 +67,29 @@ section1_familydata_fields = {
 	"amtofsubsidizedchildcare": 4,
 	"amtofchildsupport": 4,
 	"amtoffamilycashresources": 4,
-	"cash_item21a_amount": 4,
-	"cash_item21b_nbr_month": 3,
-	"tanfchildcare_item22a_amount": 4,
-	"tanfchildcare_item22b_children_covered": 2,
-	"tanfchildcare_item22c_nbr_months": 3,
-	"transportation_item23a_amount": 4,
-	"transportation_item23b_nbr_months": 3,
-	"transitionalservices_item24a_amount": 4,
-	"transitionalservices_item24b_nbr_months": 3,
-	"other_item25a_amount": 4,
-	"other_item25b_nbr_months": 3,
-	"reasonforandamtofassistancereduction_item26a_sanctionsreduction_amt": 4,
-	"reasonforandamtofassistancereduction_item26a_workrequirementssanction": 1,
-	"reasonforandamtofassistancereduction_item26a_familysanctionforadultnohsdiploma": 1,
-	"reasonforandamtofassistancereduction_item26a_sanctionforteenparentnotattendingschool": 1,
-	"reasonforandamtofassistancereduction_item26a_noncooperatewithchildsupport": 1,
-	"reasonforandamtofassistancereduction_item26a_failuretocomploywithirp": 1,
-	"reasonforandamtofassistancereduction_item26a_othersanction": 1,
-	"reasonforandamtofassistancereduction_item26b_recoupmentofprioroverpayment": 4,
-	"reasonforandamtofassistancereduction_item26c_othertotalreductionamt": 4,
-	"reasonforandamtofassistancereduction_item26c_familycap": 1,
-	"reasonforandamtofassistancereduction_item26c_reductionbasedonlengthofreceiptofassistance": 1,
-	"reasonforandamtofassistancereduction_item26c_othernonsanction": 1,
+	"cash_amount": 4,
+	"cash_nbr_month": 3,
+	"tanfchildcare_amount": 4,
+	"tanfchildcare_children_covered": 2,
+	"tanfchildcare_nbr_months": 3,
+	"transportation_amount": 4,
+	"transportation_nbr_months": 3,
+	"transitionalservices_amount": 4,
+	"transitionalservices_nbr_months": 3,
+	"other_amount": 4,
+	"other_nbr_months": 3,
+	"sanctionsreduction_amt": 4,
+	"workrequirementssanction": 1,
+	"familysanctionforadultnohsdiploma": 1,
+	"sanctionforteenparentnotattendingschool": 1,
+	"noncooperatewithchildsupport": 1,
+	"failuretocomploywithirp": 1,
+	"othersanction": 1,
+	"recoupmentofprioroverpayment": 4,
+	"othertotalreductionamt": 4,
+	"familycap": 1,
+	"reductionbasedonlengthofreceiptofassistance": 1,
+	"othernonsanction": 1,
 	"waiver_evaluation_control_gprs": 1,
 	"tanffamilyexemptfromtimelimits": 2,
 	"tanffamilynewchildonlyfamily": 1,
@@ -136,13 +136,13 @@ section2_closedperson_fields = {
 }
 
 # T6 records
-section2_aggregatedata_fields = {
+section3_aggregatedata_fields = {
 	"recordtype": 2,
 	# XXX many more fields need to be added here
 }
 
 # T7 records
-section2_familiesbystratum_fields = {
+section4_familiesbystratum_fields = {
 	"recordtype": 2,
 	# XXX many more fields need to be added here
 }
@@ -245,10 +245,10 @@ with open ( sys.argv[1], "r") as f:
 			tanfdata['section2_closedpersondata'].append(person)
 
 		elif re.match(r'^T6', line):
-			tanfdata['section3_aggregatedata'].append(parseFields(section2_aggregatedata_fields, line))
+			tanfdata['section3_aggregatedata'].append(parseFields(section3_aggregatedata_fields, line))
 
 		elif re.match(r'^T7', line):
-			tanfdata['section4_familiesbystratumdata'].append(parseFields(section2_familiesbystratum_fields, line))
+			tanfdata['section4_familiesbystratumdata'].append(parseFields(section4_familiesbystratum_fields, line))
 
 		elif re.match(r'^HEADER', line):
 			tanfdata['header'] = parseFields(header_fields, line)
