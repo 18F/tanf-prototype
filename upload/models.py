@@ -22,7 +22,7 @@ class Family(models.Model):
 
 	# record data
 	reportingmonth = models.DateField('reporting month (item 4)')
-	casenumber = models.CharField('case number (item 6)', max_length=11, unique_for_date="reportingmonth")
+	casenumber = models.CharField('case number (item 6)', max_length=11)
 	countyfipscode = models.IntegerField('county fips code (item 2)')
 	stratum = models.IntegerField('stratum (item 5)')
 	zipcode = models.CharField('zipcode (item 7)', max_length=5)
@@ -81,7 +81,7 @@ class Adult(models.Model):
 	familyafilliation = models.IntegerField('family affiliation (item 30)')
 	noncustodialparent = models.IntegerField('noncustodial parent (item 31)')
 	dateofbirth = models.DateField('date of birth (item 32)')
-	socialsecuritynumber = models.CharField('social security number (item 33)', max_length=9, unique_for_date="reportingmonth")
+	socialsecuritynumber = models.CharField('social security number (item 33)', max_length=9)
 	racehispanic = models.BooleanField('race/ethnicity: hispanic or latino (item 34a)')
 	racenativeamerican = models.BooleanField('race/ethnicity: american indian or alaska native (item 34b)')
 	# XXX many more fields need to be added here
@@ -100,7 +100,7 @@ class Child(models.Model):
 	casenumber = models.CharField('case number (item 6)', max_length=11)
 	familyafilliation = models.IntegerField('family affiliation (item 67)')
 	dateofbirth = models.DateField('date of birth (item 68)')
-	socialsecuritynumber = models.CharField('social security number (item 69)', max_length=9, unique_for_date="reportingmonth")
+	socialsecuritynumber = models.CharField('social security number (item 69)', max_length=9)
 	racehispanic = models.BooleanField('race/ethnicity: hispanic or latino (item 70a)')
 	racenativeamerican = models.BooleanField('race/ethnicity: american indian or alaska native (item 70b)')
 	# XXX many more fields need to be added here
