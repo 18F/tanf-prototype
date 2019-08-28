@@ -200,24 +200,25 @@ def decryptSsn(ssn):
 	return result
 
 
-# This is the TANF data structure which we fill up with data and convert into
-# json at the end.
-tanfdata = {
-	'header': {},
-	'section1_familydata': [],
-	'section1_adultdata': [],
-	'section1_childdata': [],
-	'section2_closedcasedata': [],
-	'section2_closedpersondata': [],
-	'section3_aggregatedata': [],
-	'section4_familiesbystratumdata': [],
-	'trailer': ()
-}
-
-
 # Read the data, parse the different line types.
 def tanf2json(f):
+	# This is the TANF data structure which we fill up with data and convert into
+	# json at the end.
+	tanfdata = {
+		'header': {},
+		'section1_familydata': [],
+		'section1_adultdata': [],
+		'section1_childdata': [],
+		'section2_closedcasedata': [],
+		'section2_closedpersondata': [],
+		'section3_aggregatedata': [],
+		'section4_familiesbystratumdata': [],
+		'trailer': ()
+	}
+
+	# This is the list of lines that we couldn't figure out what to do with
 	errorlines = []
+
 	for line in f:
 		line = line.decode('utf-8')
 		if re.match(r'^T1', line):
