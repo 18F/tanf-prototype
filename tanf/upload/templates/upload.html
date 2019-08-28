@@ -1,0 +1,20 @@
+{% extends "base-generic.html" %}
+
+{% block content %}
+	<h1>Upload</h1>
+	<p>Upload to the TANF Data Reporting system!</p>
+
+	{% if tanfdata != '' %}
+	<h2>Data:</h2>>
+	<p>{{ tanfdata | escape }}</p>
+	{% endif %}
+
+	<div>
+		<form method="post" enctype="text/plain">
+			{% csrf_token %}
+			<input type="file" name="myfile"><br><br>
+			<input type="submit" value="upload">
+		</form>
+	</div>
+
+{% endblock %}
