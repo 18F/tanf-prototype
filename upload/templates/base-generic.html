@@ -15,8 +15,9 @@
       <div class="col-sm-2">
       {% block sidebar %}
         <ul class="sidebar-nav">
-          <li><a href="{% url 'upload' %}">Upload</a></li>
           <li><a href="{% url 'about' %}">About</a></li>
+          <li><a href="{% url 'upload' %}">Upload</a></li>
+          <li><a href="{% url 'status' %}">Status</a></li>
         </ul>
      {% endblock %}
       </div>

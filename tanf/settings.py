@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import random
 import string
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -133,3 +134,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# configure things set up by cloudfoundry
+if 'VCAP_SERVICES' in os.environ:
+    # DEFAULT_FILE_STORAGE = 'XXX'
+    servicejson = os.environ['VCAP_SERVICES']
+    services = json.loads(servicejson)
+    os.environ['BUCKETNAME'] = services['s3'][0]['credentials']['bucket']
+    os.environ['AWS_DEFAULT_REGION'] = services['s3'][0]['credentials']['region']
+    os.environ['AWS_ACCESS_KEY_ID'] = services['s3'][0]['credentials']['access_key_id']
+    os.environ['AWS_SECRET_ACCESS_KEY'] = services['s3'][0]['credentials']['secret_access_key']
+else:
+    # we are in debug mode
+    MEDIA_ROOT='/tmp/tanf'

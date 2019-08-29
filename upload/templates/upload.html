@@ -4,11 +4,6 @@
 	<h1>Upload</h1>
 	<p>Upload to the TANF Data Reporting system!</p>
 
-	{% if tanfdata != '' %}
-		<h2>Data:</h2>
-		<p>{{ tanfdata | escape }}</p>
-	{% endif %}
-
 	<form method="post" enctype="multipart/form-data">
 		{% csrf_token %}
 		<input type="file" name="myfile"><br>

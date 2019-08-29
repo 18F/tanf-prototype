@@ -1,0 +1,14 @@
+{% extends "base-generic.html" %}
+
+{% block content %}
+	<h1>Status</h1>
+	<p>Check on status for data uploaded to the TANF Data Reporting system!</p>
+
+	<table>
+		<th>Queued Files:</th>
+	{% for file in queuedfiles %}
+		<tr><td>{{ file }}</td></tr>
+	{% endfor %}
+	</table>
+
+{% endblock %}
