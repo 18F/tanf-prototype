@@ -6,8 +6,8 @@
 
 	<table>
 		<th>Queued Files:</th>
-	{% for file in queuedfiles %}
-		<tr><td>{{ file }}</td></tr>
+	{% for qfile in queuedfiles %}
+		<tr><td><a href={% url 'fileinfo' file=qfile %}>{{ qfile }}</a></td><td><a href={% url 'delete' file=qfile %}>DELETE</a></td></tr>
 	{% endfor %}
 	</table>
 
