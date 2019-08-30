@@ -19,15 +19,16 @@ def validateJson(file):
 			# XXX first test rule
 			if data['header']['calendarquarter'].startswith('1972'):
 				issues.append('calendarquarter is too early: ' + data['header']['calendarquarter'])
+
+			# XXX fill out more rules here.  Probably with a rules file and json_logic?
 	except:
-		status = ['ERROR:  could not open file!']
+		issues = ['ERROR:  could not open file!']
 
 	default_storage.save(statusfile, ContentFile(json.dumps(issues)))
 
 	return len(issues) == 0
 
 def importJson(file):
-	# XXX
+	# XXX need to actually import the data into the db
 	print('importing json')
-	# XXX delete the file
 	return

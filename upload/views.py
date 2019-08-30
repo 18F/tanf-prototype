@@ -14,20 +14,23 @@ def about(request):
 
 
 def upload(request):
-	queuedfile = ''
 	if request.method == 'POST' and request.FILES['myfile']:
 		myfile = request.FILES['myfile']
 		tanfdata = tanf2json(myfile)
 
-		# store tanfdata in queue for processing
+		# store tanfdata for processing
 		user = str(request.user)
 		datestr = datetime.datetime.now().strftime('%Y%m%d%H%M%SZ')
 		originalname = myfile.name
 		filename = '_'.join([user, datestr, originalname, '.json'])
-		queuedfile = default_storage.save(filename, ContentFile(tanfdata))
+		thefile = default_storage.save(filename, ContentFile(tanfdata))
 
-		# process file
-		processJson(queuedfile)
+		# process file (validate and store if validation is successful)
+		# XXX If this takes too long to process inline, we will have
+		# XXX to change the code to just store the file and to kick off
+		# XXX a job to process the data.  Other pages will need some
+		# XXX extra code to handle unprocessed jobs too.
+		processJson(thefile)
 
 		# redirect to status page
 		return redirect('status')
@@ -36,14 +39,23 @@ def upload(request):
 
 
 def status(request):
-	files = []
+	statusmap = {}
 	for i in default_storage.listdir('')[1]:
 		# only show files that are json and owned by the requestor
 		if i.endswith('.json') and i.startswith(str(request.user)):
-			files.append(i)
-	files.sort
+			statusfile = i + '.status'
+			with default_storage.open(statusfile,'r') as f:
+				status = json.load(f)
+				if len(status) == 0:
+					statusmap[i] = 'Pass'
+				else:
+					statusmap[i] = 'Fail'
+
+	files = sorted(statusmap.items())
+
+	print('statusmap is', statusmap)
 	context = {
-		'queuedfiles': files
+		'filelist': files,
 	}
 	return render(request, "status.html", context)
 
@@ -59,12 +71,35 @@ def fileinfo(request, file=None):
 	return render(request, "fileinfo.html", {'status': status})
 
 
+def deletesuccessful(request):
+	files = []
+	for i in default_storage.listdir('')[1]:
+		# only look at files that are json and owned by the requestor
+		if i.endswith('.json') and i.startswith(str(request.user)):
+			statusfile = i + '.status'
+			with default_storage.open(statusfile,'r') as f:
+				status = json.load(f)
+				# if there are no issues, add it to the list
+				if len(status) == 0:
+					files.append(i)
+	for file in files:
+		statusfile = file + '.status'
+		if default_storage.exists(file) and default_storage.exists(statusfile):
+			default_storage.delete(file)
+			default_storage.delete(statusfile)
+	return redirect('status')
+
+
 def delete(request, file=None):
 	confirmed = request.GET.get('confirmed')
 	statusfile = file + '.status'
 
-	with default_storage.open(statusfile,'r') as f:
-		status = json.load(f)
+	try:
+		with default_storage.open(statusfile,'r') as f:
+			status = json.load(f)
+	except:
+		# XXX probably should say something here about failing to the user
+		return redirect('status')
 
 	# Get a confirmation if we still have issues with the upload.
 	# Otherwise, the import went well, so delete without prompting.
