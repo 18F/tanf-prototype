@@ -3,25 +3,22 @@ from datetime import date
 import math
 
 
-def currentCalendarQuarter():
-	month = date.today().month
-	return math.ceil(float(month) / 3)
-
-def currentCalendarYear():
-	return date.today().year
-
 # Create your models here.
 
 # https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section1_10_2008.pdf
 class Family(models.Model):
+	# metadata
+	imported_at = models.DateTimeField('time record was imported (metadata)')
+	imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+
 	# header data
-	calendar_quarter = models.IntegerField('calendar quarter (header)', default=currentCalendarQuarter())
-	calendar_year = models.IntegerField('calendar year (header)', default=currentCalendarYear())
+	calendar_quarter = models.IntegerField('calendar quarter (header)')
 	state_code = models.CharField('state fips code (header)', max_length=3)
 	tribe_code = models.CharField('tribe code (header)', max_length=3)
 
 	# record data
-	reportingmonth = models.DateField('reporting month (item 4)')
+	recordtype = models.CharField('record type (T1)', max_length=2)
+	reportingmonth = models.CharField('reporting month (item 4)', max_length=6)
 	casenumber = models.CharField('case number (item 6)', max_length=11)
 	countyfipscode = models.IntegerField('county fips code (item 2)')
 	stratum = models.IntegerField('stratum (item 5)')
@@ -31,11 +28,11 @@ class Family(models.Model):
 	newapplicant = models.IntegerField('new applicant (item 10)')
 	numfamilymembers = models.IntegerField('number family members (item 11)')
 	typeoffamilyforworkparticipation = models.IntegerField('type of family for work participation (item 12)')
-	receivessubsidizedhousing = models.BooleanField('receives subsidized housing (item 13)')
-	receivesmedicalassistance = models.BooleanField('receives medical assistance (item 14)')
-	receivesfoodstamps = models.BooleanField('receives food stamps (item 15)')
+	receivessubsidizedhousing = models.CharField('receives subsidized housing (item 13)', max_length=1)
+	receivesmedicalassistance = models.CharField('receives medical assistance (item 14)', max_length=1)
+	receivesfoodstamps = models.CharField('receives food stamps (item 15)', max_length=1)
 	amtoffoodstampassistance = models.IntegerField('amount of food stamp assistance (item 16)')
-	receivessubsidizedchildcare = models.BooleanField('receives food stamps (item 17)')
+	receivessubsidizedchildcare = models.CharField('receives food stamps (item 17)', max_length=1)
 	amtofsubsidizedchildcare = models.IntegerField('amount of subsidized child care (item 18)')
 	amtofchildsupport = models.IntegerField('amount of child support (item 19)')
 	amtoffamilycashresources = models.IntegerField('amount of familys cash resources (item 20)')
@@ -69,92 +66,108 @@ class Family(models.Model):
 
 # https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section1_10_2008.pdf
 class Adult(models.Model):
+	# metadata
+	imported_at = models.DateTimeField('time record was imported (metadata)')
+	imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+
 	# header data
-	calendar_quarter = models.IntegerField('calendar quarter (header)', default=currentCalendarQuarter())
-	calendar_year = models.IntegerField('calendar year (header)', default=currentCalendarYear())
+	calendar_quarter = models.IntegerField('calendar quarter (header)')
 	state_code = models.CharField('state fips code (header)', max_length=3)
 	tribe_code = models.CharField('tribe code (header)', max_length=3)
 
 	# record data
-	reportingmonth = models.DateField('reporting month (item 4)')
+	recordtype = models.CharField('record type (T2)', max_length=2)
+	reportingmonth = models.CharField('reporting month (item 4)', max_length=6)
 	casenumber = models.CharField('case number (item 6)', max_length=11)
 	familyafilliation = models.IntegerField('family affiliation (item 30)')
 	noncustodialparent = models.IntegerField('noncustodial parent (item 31)')
 	dateofbirth = models.DateField('date of birth (item 32)')
 	socialsecuritynumber = models.CharField('social security number (item 33)', max_length=9)
-	racehispanic = models.BooleanField('race/ethnicity: hispanic or latino (item 34a)')
-	racenativeamerican = models.BooleanField('race/ethnicity: american indian or alaska native (item 34b)')
+	racehispanic = models.CharField('race/ethnicity: hispanic or latino (item 34a)', max_length=1)
+	racenativeamerican = models.CharField('race/ethnicity: american indian or alaska native (item 34b)', max_length=1)
 	# XXX many more fields need to be added here
 
 
 # https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section1_10_2008.pdf
 class Child(models.Model):
+	# metadata
+	imported_at = models.DateTimeField('time record was imported (metadata)')
+	imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+
 	# header data
-	calendar_quarter = models.IntegerField('calendar quarter (header)', default=currentCalendarQuarter())
-	calendar_year = models.IntegerField('calendar year (header)', default=currentCalendarYear())
+	calendar_quarter = models.IntegerField('calendar quarter (header)')
 	state_code = models.CharField('state fips code (header)', max_length=3)
 	tribe_code = models.CharField('tribe code (header)', max_length=3)
 
 	# record data
-	reportingmonth = models.DateField('reporting month (item 4)')
+	recordtype = models.CharField('record type (T3)', max_length=2)
+	reportingmonth = models.CharField('reporting month (item 4)', max_length=6)
 	casenumber = models.CharField('case number (item 6)', max_length=11)
 	familyafilliation = models.IntegerField('family affiliation (item 67)')
 	dateofbirth = models.DateField('date of birth (item 68)')
 	socialsecuritynumber = models.CharField('social security number (item 69)', max_length=9)
-	racehispanic = models.BooleanField('race/ethnicity: hispanic or latino (item 70a)')
-	racenativeamerican = models.BooleanField('race/ethnicity: american indian or alaska native (item 70b)')
+	racehispanic = models.CharField('race/ethnicity: hispanic or latino (item 70a)', max_length=1)
+	racenativeamerican = models.CharField('race/ethnicity: american indian or alaska native (item 70b)', max_length=1)
 	# XXX many more fields need to be added here
 
 # https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section2.pdf
 class ClosedCase(models.Model):
+	# metadata
+	imported_at = models.DateTimeField('time record was imported (metadata)')
+	imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+
 	# header data
-	calendar_quarter = models.IntegerField('calendar quarter (header)', default=currentCalendarQuarter())
-	calendar_year = models.IntegerField('calendar year (header)', default=currentCalendarYear())
+	calendar_quarter = models.IntegerField('calendar quarter (header)')
 	state_code = models.CharField('state fips code (header)', max_length=3)
 	tribe_code = models.CharField('tribe code (header)', max_length=3)
 
 	# record data
-	reportingmonth = models.DateField('reporting month (item 4)')
+	recordtype = models.CharField('record type (T4)', max_length=2)
+	reportingmonth = models.CharField('reporting month (item 4)', max_length=6)
 	casenumber = models.CharField('case number (item 6)', max_length=11)
 	countyfipscode = models.IntegerField('county fips code (item 2)')
 	stratum = models.IntegerField('stratum (item 5)')
 	zipcode = models.CharField('zipcode (item 7)', max_length=5)
 	disposition = models.IntegerField('disposition (item 8)')
 	closurereason = models.IntegerField('reason for closure (item 9)')
-	receivessubsidizedhousing = models.BooleanField('receives subsidized housing (item 10)')
-	receivesmedicalassistance = models.BooleanField('receives medical assistance (item 11)')
-	receivesfoodstamps = models.BooleanField('receives food stamps (item 12)')
-	receivessubsidizedchildcare = models.BooleanField('receives subsidized child care (item 13)')
+	receivessubsidizedhousing = models.CharField('receives subsidized housing (item 10)', max_length=1)
+	receivesmedicalassistance = models.CharField('receives medical assistance (item 11)', max_length=1)
+	receivesfoodstamps = models.CharField('receives food stamps (item 12)', max_length=1)
+	receivessubsidizedchildcare = models.CharField('receives subsidized child care (item 13)', max_length=1)
 
 # https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section2.pdf
 class ClosedPerson(models.Model):
+	# metadata
+	imported_at = models.DateTimeField('time record was imported (metadata)')
+	imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+
 	# header data
-	calendar_quarter = models.IntegerField('calendar quarter (header)', default=currentCalendarQuarter())
-	calendar_year = models.IntegerField('calendar year (header)', default=currentCalendarYear())
+	calendar_quarter = models.IntegerField('calendar quarter (header)')
 	state_code = models.CharField('state fips code (header)', max_length=3)
 	tribe_code = models.CharField('tribe code (header)', max_length=3)
 
 	# record data
-	reportingmonth = models.DateField('reporting month (item 4)')
+	recordtype = models.CharField('record type (T5)', max_length=2)
+	reportingmonth = models.CharField('reporting month (item 4)', max_length=6)
 	casenumber = models.CharField('case number (item 6)', max_length=11)
 	familyafilliation = models.IntegerField('family affiliation (item 14)')
 	dateofbirth = models.DateField('date of birth (item 15)')
 	socialsecuritynumber = models.CharField('social security number (item 16)', max_length=9)
-	racehispanic = models.BooleanField('race/ethnicity: hispanic or latino (item 17a)')
-	racenativeamerican = models.BooleanField('race/ethnicity: american indian or alaska native (item 17b)')
-	raceasian = models.BooleanField('race/ethnicity: asian (item 17c)')
-	raceblack = models.BooleanField('race/ethnicity: black or african american (item 17d)')
-	racepacific = models.BooleanField('race/ethnicity: native hawaiian or other pacific islander (item 17e)')
-	racewhite = models.BooleanField('race/ethnicity: white (item 17f)')
+	racehispanic = models.CharField('race/ethnicity: hispanic or latino (item 17a)', max_length=1)
+	racenativeamerican = models.CharField('race/ethnicity: american indian or alaska native (item 17b)', max_length=1)
+	raceasian = models.CharField('race/ethnicity: asian (item 17c)', max_length=1)
+	raceblack = models.CharField('race/ethnicity: black or african american (item 17d)', max_length=1)
+	racepacific = models.CharField('race/ethnicity: native hawaiian or other pacific islander (item 17e)', max_length=1)
+	racewhite = models.CharField('race/ethnicity: white (item 17f)', max_length=1)
 	gender = models.IntegerField('gender (item 18)')
-	oasdibenefits = models.BooleanField('receives disability benefits: received federal disability insurance benefits under the oasdi program (item 19a)')
-	nonssabenefits = models.BooleanField('receives disability benefits: receives benefits based on federal disability status under non-ssa programs (item 19b)')
-	titlexivapdtbenefits = models.BooleanField('receives disability benefits: received aid to the permanently and totally disabled under title xiv-apdt (item 19c)')
-	titlexviaabdbenefits = models.BooleanField('receives disability benefits: received aid to the aged, blind, and disabled under title xvi-aabd (item 19d)')
-	titlexvissibenefits = models.BooleanField('receives disability benefits: received ssi under title xvi-ssi (item 19e)')
+	oasdibenefits = models.CharField('receives disability benefits: received federal disability insurance benefits under the oasdi program (item 19a)', max_length=1)
+	nonssabenefits = models.CharField('receives disability benefits: receives benefits based on federal disability status under non-ssa programs (item 19b)', max_length=1)
+	titlexivapdtbenefits = models.CharField('receives disability benefits: received aid to the permanently and totally disabled under title xiv-apdt (item 19c)', max_length=1)
+	titlexviaabdbenefits = models.CharField('receives disability benefits: received aid to the aged, blind, and disabled under title xvi-aabd (item 19d)', max_length=1)
+	titlexvissibenefits = models.CharField('receives disability benefits: received ssi under title xvi-ssi (item 19e)', max_length=1)
 	maritalstatus = models.CharField('marital status (item 20)', max_length=1)
 	relationshiptohh = models.IntegerField('relationship to head of household (item 21)')
-	parentminorchild = models.BooleanField('parent with minor child in the family (item 22)')
+	parentminorchild = models.CharField('parent with minor child in the family (item 22)', max_length=1)
 	pregnantneeds = models.CharField('needs of a pregnant woman (item 23)', max_length=11)
 	educationlevel = models.CharField('education level (item 24)', max_length=12)
 	citizenship = models.CharField('citizenship/alienage (item 25)', max_length=1)
@@ -167,13 +180,17 @@ class ClosedPerson(models.Model):
 
 # https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section3.pdf
 class AggregatedData(models.Model):
+	# metadata
+	imported_at = models.DateTimeField('time record was imported (metadata)')
+	imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+
 	# header data
-	calendar_quarter = models.IntegerField('calendar quarter (header)', default=currentCalendarQuarter())
-	calendar_year = models.IntegerField('calendar year (header)', default=currentCalendarYear())
+	calendar_quarter = models.IntegerField('calendar quarter (header)')
 	state_code = models.CharField('state fips code (header)', max_length=3)
 	tribe_code = models.CharField('tribe code (header)', max_length=3)
 
 	# record data
+	recordtype = models.CharField('record type (T6)', max_length=2)
 	calendaryear = models.IntegerField('calendar year (item 3)')
 	calendarquarter = models.IntegerField('calendar quarter (item 3)')
 	firstmonthapps = models.IntegerField('total number of applicants: first month (item 4)')
@@ -190,13 +207,17 @@ class AggregatedData(models.Model):
 
 # https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section4.pdf
 class FamiliesByStratumData(models.Model):
+	# metadata
+	imported_at = models.DateTimeField('time record was imported (metadata)')
+	imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+
 	# header data
-	calendar_quarter = models.IntegerField('calendar quarter (header)', default=currentCalendarQuarter())
-	calendar_year = models.IntegerField('calendar year (header)', default=currentCalendarYear())
+	calendar_quarter = models.IntegerField('calendar quarter (header)')
 	state_code = models.CharField('state fips code (header)', max_length=3)
 	tribe_code = models.CharField('tribe code (header)', max_length=3)
 
 	# record data
+	recordtype = models.CharField('record type (T7)', max_length=2)
 	calendaryear = models.IntegerField('calendar year (item 3)')
 	calendarquarter = models.IntegerField('calendar quarter (item 3)')
 	# XXX many more fields need to be added here

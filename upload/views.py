@@ -30,7 +30,7 @@ def upload(request):
 		# XXX to change the code to just store the file and to kick off
 		# XXX a job to process the data.  Other pages will need some
 		# XXX extra code to handle unprocessed jobs too.
-		processJson(thefile)
+		processJson(thefile, user)
 
 		# redirect to status page
 		return redirect('status')
@@ -44,16 +44,18 @@ def status(request):
 		# only show files that are json and owned by the requestor
 		if i.endswith('.json') and i.startswith(str(request.user)):
 			statusfile = i + '.status'
-			with default_storage.open(statusfile,'r') as f:
-				status = json.load(f)
-				if len(status) == 0:
-					statusmap[i] = 'Pass'
-				else:
-					statusmap[i] = 'Fail'
+			try:
+				with default_storage.open(statusfile,'r') as f:
+					status = json.load(f)
+					if len(status) == 0:
+						statusmap[i] = 'Pass'
+					else:
+						statusmap[i] = 'Fail'
+			except:
+					statusmap[i] = 'Stuck'
 
 	files = sorted(statusmap.items())
 
-	print('statusmap is', statusmap)
 	context = {
 		'filelist': files,
 	}
@@ -77,11 +79,14 @@ def deletesuccessful(request):
 		# only look at files that are json and owned by the requestor
 		if i.endswith('.json') and i.startswith(str(request.user)):
 			statusfile = i + '.status'
-			with default_storage.open(statusfile,'r') as f:
-				status = json.load(f)
-				# if there are no issues, add it to the list
-				if len(status) == 0:
-					files.append(i)
+			try:
+				with default_storage.open(statusfile,'r') as f:
+					status = json.load(f)
+					# if there are no issues, add it to the list
+					if len(status) == 0:
+						files.append(i)
+			except:
+				pass
 	for file in files:
 		statusfile = file + '.status'
 		if default_storage.exists(file) and default_storage.exists(statusfile):
