@@ -23,7 +23,7 @@ def upload(request):
 		datestr = datetime.datetime.now().strftime('%Y%m%d%H%M%SZ')
 		originalname = myfile.name
 		filename = '_'.join([user, datestr, originalname, '.json'])
-		thefile = default_storage.save(filename, ContentFile(tanfdata))
+		thefile = default_storage.save(filename, ContentFile(tanfdata.encode()))
 
 		# process file (validate and store if validation is successful)
 		# XXX If this takes too long to process inline, we will have

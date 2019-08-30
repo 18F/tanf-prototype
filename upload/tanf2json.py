@@ -6,7 +6,7 @@
 #  1) We do not parse the fields at all, but just pull them
 #     in as strings.  So we don't do any type parsing or anything.  That might
 #     better be done by code that consumes the json doc and stores it.
-#  2) The social security numbers have dashes put into them, which may not
+#  2) The social security numbers do not have dashes put into them, which may not
 #     be the way they are parsed/stored in the existing system.
 # 
 # This code must be run with python 3.6 or above, because it preserves
@@ -194,9 +194,10 @@ def decryptSsn(ssn):
 			result = result + decryptmap[z]
 		except:
 			result = result + z
-	if len(result) == 9:
-		result = result[:5] + '-' + result[5:]
-		result = result[:3] + '-' + result[3:]
+	# # Put in -es into SSN
+	# if len(result) == 9:
+	# 	result = result[:5] + '-' + result[5:]
+	# 	result = result[:3] + '-' + result[3:]
 	return result
 
 

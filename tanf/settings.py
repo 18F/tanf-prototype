@@ -38,7 +38,7 @@ if 'DEBUG' in os.environ:
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    # 'django.contrib.staticfiles',
 ]
 
 MIDDLEWARE = [
@@ -137,13 +137,25 @@ STATIC_URL = '/static/'
 
 # configure things set up by cloudfoundry
 if 'VCAP_SERVICES' in os.environ:
-    # DEFAULT_FILE_STORAGE = 'XXX'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     servicejson = os.environ['VCAP_SERVICES']
     services = json.loads(servicejson)
-    os.environ['BUCKETNAME'] = services['s3'][0]['credentials']['bucket']
-    os.environ['AWS_DEFAULT_REGION'] = services['s3'][0]['credentials']['region']
-    os.environ['AWS_ACCESS_KEY_ID'] = services['s3'][0]['credentials']['access_key_id']
-    os.environ['AWS_SECRET_ACCESS_KEY'] = services['s3'][0]['credentials']['secret_access_key']
+    AWS_STORAGE_BUCKET_NAME = services['s3'][0]['credentials']['bucket']
+    AWS_S3_REGION_NAME = services['s3'][0]['credentials']['region']
+    # if AWS_S3_REGION_NAME.startswith('us-gov-'):
+    #     AWS_S3_ENDPOINT_URL = 'https://s3-' + AWS_DEFAULT_REGION + '.amazonaws.com'
+    AWS_ACCESS_KEY_ID = services['s3'][0]['credentials']['access_key_id']
+    AWS_SECRET_ACCESS_KEY = services['s3'][0]['credentials']['secret_access_key']
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': services['aws-rds'][0]['credentials']['db_name'],                      
+            'USER': services['aws-rds'][0]['credentials']['username'],
+            'PASSWORD': services['aws-rds'][0]['credentials']['password'],
+            'HOST': services['aws-rds'][0]['credentials']['host'],
+            'PORT': services['aws-rds'][0]['credentials']['port'],
+        }
+    }
 else:
-    # we are in debug mode
+    # we are in local development mode
     MEDIA_ROOT='/tmp/tanf'

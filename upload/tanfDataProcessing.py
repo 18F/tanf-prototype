@@ -25,7 +25,7 @@ def validateJson(file):
 	except:
 		issues = ['ERROR:  could not open file!']
 
-	default_storage.save(statusfile, ContentFile(json.dumps(issues)))
+	default_storage.save(statusfile, ContentFile(json.dumps(issues).encode()))
 
 	return len(issues) == 0
 

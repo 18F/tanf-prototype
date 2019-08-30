@@ -1,2 +1,6 @@
 Django>=2.2.4
 json-logic
+psycopg2
+boto3
+gunicorn
+django-storages
