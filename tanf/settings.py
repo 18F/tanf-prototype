@@ -60,9 +60,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'mozilla_django_oidc.middleware.SessionRefresh',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'mozilla_django_oidc.middleware.SessionRefresh',
 ]
 
 ROOT_URLCONF = 'tanf.urls'
@@ -158,27 +158,25 @@ if 'VCAP_SERVICES' in os.environ:
             'PORT': services['aws-rds'][0]['credentials']['port'],
         }
     }
+    # Add 'mozilla_django_oidc' authentication backend
+    AUTHENTICATION_BACKENDS = (
+        'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
+    )
+    if 'OIDC_RP_CLIENT_ID' in os.environ:
+        OIDC_RP_CLIENT_ID = os.environ['OIDC_RP_CLIENT_ID']
+    if 'OIDC_RP_CLIENT_SECRET' in os.environ:
+        OIDC_RP_CLIENT_SECRET = os.environ['OIDC_RP_CLIENT_SECRET']
+
+    OIDC_OP_AUTHORIZATION_ENDPOINT = "https://login.fr.cloud.gov/oauth/authorize"
+    OIDC_OP_TOKEN_ENDPOINT = "https://uaa.fr.cloud.gov/oauth/token"
+    OIDC_OP_USER_ENDPOINT = "https://login.fr.cloud.gov/profile"
+    OIDC_RP_SIGN_ALGO = 'RS256'
+    OIDC_OP_JWKS_ENDPOINT = "https://uaa.fr.cloud.gov/token_keys"
+
+    LOGIN_REDIRECT_URL = "/"
+    LOGOUT_REDIRECT_URL = "/about"
+    OIDC_RP_SCOPES = "openid"
+    LOGIN_URL = '/oidc/authenticate'
 else:
     # we are in local development mode
     MEDIA_ROOT='/tmp/tanf'
-
-
-# Add 'mozilla_django_oidc' authentication backend
-AUTHENTICATION_BACKENDS = (
-    'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
-)
-if 'OIDC_RP_CLIENT_ID' in os.environ:
-    OIDC_RP_CLIENT_ID = os.environ['OIDC_RP_CLIENT_ID']
-if 'OIDC_RP_CLIENT_SECRET' in os.environ:
-    OIDC_RP_CLIENT_SECRET = os.environ['OIDC_RP_CLIENT_SECRET']
-
-OIDC_OP_AUTHORIZATION_ENDPOINT = "https://login.fr.cloud.gov/oauth/authorize"
-OIDC_OP_TOKEN_ENDPOINT = "https://uaa.fr.cloud.gov/oauth/token"
-OIDC_OP_USER_ENDPOINT = "https://login.fr.cloud.gov/oauth/userinfo"
-OIDC_RP_SIGN_ALGO = 'RS256'
-OIDC_OP_JWKS_ENDPOINT = "https://login.fr.cloud.gov/oauth/check_token"
-
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/about"
-OIDC_RP_SCOPES = "openid"
-LOGIN_URL = '/oidc/authenticate'
