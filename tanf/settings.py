@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'upload.apps.UploadConfig',
     'django.contrib.admin',
     'django.contrib.auth',
+    'mozilla_django_oidc',  # Load after auth
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -61,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mozilla_django_oidc.middleware.SessionRefresh',
 ]
 
 ROOT_URLCONF = 'tanf.urls'
@@ -159,3 +161,24 @@ if 'VCAP_SERVICES' in os.environ:
 else:
     # we are in local development mode
     MEDIA_ROOT='/tmp/tanf'
+
+
+# Add 'mozilla_django_oidc' authentication backend
+AUTHENTICATION_BACKENDS = (
+    'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
+)
+if 'OIDC_RP_CLIENT_ID' in os.environ:
+    OIDC_RP_CLIENT_ID = os.environ['OIDC_RP_CLIENT_ID']
+if 'OIDC_RP_CLIENT_SECRET' in os.environ:
+    OIDC_RP_CLIENT_SECRET = os.environ['OIDC_RP_CLIENT_SECRET']
+
+OIDC_OP_AUTHORIZATION_ENDPOINT = "https://login.fr.cloud.gov/oauth/authorize"
+OIDC_OP_TOKEN_ENDPOINT = "https://uaa.fr.cloud.gov/oauth/token"
+OIDC_OP_USER_ENDPOINT = "https://login.fr.cloud.gov/oauth/userinfo"
+OIDC_RP_SIGN_ALGO = 'RS256'
+OIDC_OP_JWKS_ENDPOINT = "https://login.fr.cloud.gov/oauth/check_token"
+
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/about"
+OIDC_RP_SCOPES = "openid"
+LOGIN_URL = '/oidc/authenticate'

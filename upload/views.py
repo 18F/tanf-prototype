@@ -6,6 +6,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import datetime
 import json
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -13,6 +14,7 @@ def about(request):
 	return render(request, "about.html")
 
 
+@login_required
 def upload(request):
 	if request.method == 'POST' and request.FILES['myfile']:
 		myfile = request.FILES['myfile']
@@ -37,7 +39,7 @@ def upload(request):
 
 	return render(request, 'upload.html')
 
-
+@login_required
 def status(request):
 	statusmap = {}
 	for i in default_storage.listdir('')[1]:
@@ -65,6 +67,7 @@ def status(request):
 # This is where we should be able to delve in and edit data that needs fixing.
 # For now, we will just show the issues, so they can reupload.  Maybe this is
 # better, because this will enforce good data hygiene on the STT end?
+@login_required
 def fileinfo(request, file=None):
 	status = []
 	statusfile = file + '.status'
@@ -73,6 +76,7 @@ def fileinfo(request, file=None):
 	return render(request, "fileinfo.html", {'status': status})
 
 
+@login_required
 def deletesuccessful(request):
 	files = []
 	for i in default_storage.listdir('')[1]:
@@ -95,6 +99,7 @@ def deletesuccessful(request):
 	return redirect('status')
 
 
+@login_required
 def delete(request, file=None):
 	confirmed = request.GET.get('confirmed')
 	statusfile = file + '.status'
