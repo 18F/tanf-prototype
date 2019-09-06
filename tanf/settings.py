@@ -14,6 +14,7 @@ import os
 import random
 import string
 import json
+import django
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'upload.apps.UploadConfig',
     'django.contrib.admin',
     'django.contrib.auth',
+    'uaa_client',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -55,10 +57,12 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'uaa_client.middleware.UaaRefreshMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -135,6 +139,18 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Set up OATH2 for 2fa stuff.
+# You could probably get this going with https://mozilla-django-oidc.readthedocs.io/en/stable/ too.
+UAA_AUTH_URL = 'https://login.fr.cloud.gov/oauth/authorize'
+UAA_TOKEN_URL = 'https://uaa.fr.cloud.gov/oauth/token'
+LOGIN_URL = 'uaa_client:login'
+AUTHENTICATION_BACKENDS = ['uaa_client.authentication.UaaBackend']
+if django.get_version().startswith('1.8.') or \
+        django.get_version().startswith('1.9.') or \
+        django.get_version().startswith('2.'):
+    MIDDLEWARE_CLASSES = MIDDLEWARE
+
+
 # configure things set up by cloudfoundry
 if 'VCAP_SERVICES' in os.environ:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
@@ -142,8 +158,6 @@ if 'VCAP_SERVICES' in os.environ:
     services = json.loads(servicejson)
     AWS_STORAGE_BUCKET_NAME = services['s3'][0]['credentials']['bucket']
     AWS_S3_REGION_NAME = services['s3'][0]['credentials']['region']
-    # if AWS_S3_REGION_NAME.startswith('us-gov-'):
-    #     AWS_S3_ENDPOINT_URL = 'https://s3-' + AWS_DEFAULT_REGION + '.amazonaws.com'
     AWS_ACCESS_KEY_ID = services['s3'][0]['credentials']['access_key_id']
     AWS_SECRET_ACCESS_KEY = services['s3'][0]['credentials']['secret_access_key']
     DATABASES = {
@@ -156,6 +170,13 @@ if 'VCAP_SERVICES' in os.environ:
             'PORT': services['aws-rds'][0]['credentials']['port'],
         }
     }
+
+    UAA_CLIENT_ID = os.environ['UAA_CLIENT_ID']
+    UAA_CLIENT_SECRET = os.environ['UAA_CLIENT_SECRET']
 else:
     # we are in local development mode
     MEDIA_ROOT='/tmp/tanf'
+    UAA_AUTH_URL = 'fake:'
+    UAA_TOKEN_URL = 'fake:'
+    UAA_CLIENT_ID = 'fake:'
+    UAA_CLIENT_SECRET = 'fake:'

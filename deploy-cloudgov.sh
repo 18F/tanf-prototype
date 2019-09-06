@@ -22,6 +22,12 @@ if [ "$1" = "setup" ] ; then  echo
 	  fi
 	fi
 
+	if service_exists "tanf-uaa-client" ; then
+		echo tanf-uaa-client alredy created
+	else
+		cf create-service cloud-gov-identity-provider oauth-client tanf-uaa-client
+	fi
+
 	if service_exists "tanf-deployer" ; then
 	  echo tanf-deployer already created
 	else
@@ -57,12 +63,28 @@ else
 fi
 
 # do db migrations if requested
-if [ "$1" = "updatedb" ] ; then
-	cf run-task tanf "python manage.py migrate" --name migrate
+if [ "$1" = "dbsetup" ] ; then
+	cf run-task tanf "python manage.py migrate" --name dbsetup
 fi
 
-# tell people where to go
+# set up OIDC stuff
 ROUTE="$(cf apps | grep tanf | awk '{print $6}')"
+if cf service-keys tanf-uaa-client | grep tanf-service-key ; then
+	echo OIDC already set up
+else
+	if [ -z "$ROUTE" ] ; then
+		echo "cannot create OIDC service key until the app has been created."
+		echo "Get the app running and then re-run the setup"
+	else
+		cf create-service-key tanf-uaa-client tanf-service-key -c "{\"redirect_uri\": [\"https://$ROUTE/oidc/callback/\", \"https://$ROUTE/logout\"]}"
+		cf set-env tanf UAA_CLIENT_ID $(cf service-key tanf-uaa-client tanf-service-key | grep client_id | awk '{print $2}' | sed 's/^"\(.*\)",*$/\1/')
+		cf set-env tanf UAA_CLIENT_SECRET $(cf service-key tanf-uaa-client tanf-service-key | grep client_secret | awk '{print $2}' | sed 's/^"\(.*\)",*$/\1/')
+		cf restart tanf
+	fi
+fi
+
+
+# tell people where to go
 echo
 echo
 echo "to log into the site, you will want to go to https://${ROUTE}/"

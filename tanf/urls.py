@@ -15,8 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from uaa_client.decorators import staff_login_required
+
+# Wrap the admin site login with our staff_login_required decorator,
+# which will raise a PermissionDenied exception if a logged-in, but
+# non-staff user attempts to access the login page.
+admin.site.login = staff_login_required(admin.site.login)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('auth/', include('uaa_client.urls')),
     path('', include('upload.urls')),
 ]
