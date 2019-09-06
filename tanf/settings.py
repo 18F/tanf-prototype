@@ -26,6 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def random_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 
+
 if 'SECRET_KEY' in os.environ:
     SECRET_KEY = os.environ['SECRET_KEY']
 else:
@@ -142,14 +143,12 @@ if 'VCAP_SERVICES' in os.environ:
     services = json.loads(servicejson)
     AWS_STORAGE_BUCKET_NAME = services['s3'][0]['credentials']['bucket']
     AWS_S3_REGION_NAME = services['s3'][0]['credentials']['region']
-    # if AWS_S3_REGION_NAME.startswith('us-gov-'):
-    #     AWS_S3_ENDPOINT_URL = 'https://s3-' + AWS_DEFAULT_REGION + '.amazonaws.com'
     AWS_ACCESS_KEY_ID = services['s3'][0]['credentials']['access_key_id']
     AWS_SECRET_ACCESS_KEY = services['s3'][0]['credentials']['secret_access_key']
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': services['aws-rds'][0]['credentials']['db_name'],                      
+            'NAME': services['aws-rds'][0]['credentials']['db_name'],
             'USER': services['aws-rds'][0]['credentials']['username'],
             'PASSWORD': services['aws-rds'][0]['credentials']['password'],
             'HOST': services['aws-rds'][0]['credentials']['host'],
@@ -158,4 +157,4 @@ if 'VCAP_SERVICES' in os.environ:
     }
 else:
     # we are in local development mode
-    MEDIA_ROOT='/tmp/tanf'
+    MEDIA_ROOT = '/tmp/tanf'
