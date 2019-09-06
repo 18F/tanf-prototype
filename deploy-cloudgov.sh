@@ -50,6 +50,20 @@ if [ "$1" = "setup" ] ; then  echo
 	  	echo $i minutes...
 	  done
 	fi
+
+	# set some env vars so the app can start up
+	if cf e tanf | grep -E '^UAA_CLIENT_ID' >/dev/null ; then
+		echo "UAA_CLIENT_ID seems to be set already: leaving alone"
+	else
+		echo setting temporary UAA_CLIENT_ID
+		cf set-env tanf UAA_CLIENT_ID XXX
+	fi
+	if cf e tanf | grep -E '^UAA_CLIENT_SECRET' >/dev/null ; then
+		echo "UAA_CLIENT_SECRET seems to be set already: leaving alone"
+	else
+		echo setting temporary UAA_CLIENT_SECRET
+		cf set-env tanf UAA_CLIENT_SECRET XXX
+	fi
 fi
 
 # launch the app
@@ -76,7 +90,7 @@ else
 		echo "cannot create OIDC service key until the app has been created."
 		echo "Get the app running and then re-run the setup"
 	else
-		cf create-service-key tanf-uaa-client tanf-service-key -c "{\"redirect_uri\": [\"https://$ROUTE/oidc/callback/\", \"https://$ROUTE/logout\"]}"
+		cf create-service-key tanf-uaa-client tanf-service-key -c "{\"redirect_uri\": [\"https://$ROUTE/auth/callback\", \"https://$ROUTE/logout\"]}"
 		cf set-env tanf UAA_CLIENT_ID $(cf service-key tanf-uaa-client tanf-service-key | grep client_id | awk '{print $2}' | sed 's/^"\(.*\)",*$/\1/')
 		cf set-env tanf UAA_CLIENT_SECRET $(cf service-key tanf-uaa-client tanf-service-key | grep client_secret | awk '{print $2}' | sed 's/^"\(.*\)",*$/\1/')
 		cf restart tanf

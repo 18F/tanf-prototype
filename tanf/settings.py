@@ -27,6 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def random_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 
+
 if 'SECRET_KEY' in os.environ:
     SECRET_KEY = os.environ['SECRET_KEY']
 else:
@@ -48,11 +49,11 @@ INSTALLED_APPS = [
     'upload.apps.UploadConfig',
     'django.contrib.admin',
     'django.contrib.auth',
-    'uaa_client',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     # 'django.contrib.staticfiles',
+    'uaa_client',
 ]
 
 MIDDLEWARE = [
@@ -139,6 +140,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
 # Set up OATH2 for 2fa stuff.
 # You could probably get this going with https://mozilla-django-oidc.readthedocs.io/en/stable/ too.
 UAA_AUTH_URL = 'https://login.fr.cloud.gov/oauth/authorize'
@@ -163,7 +165,7 @@ if 'VCAP_SERVICES' in os.environ:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': services['aws-rds'][0]['credentials']['db_name'],                      
+            'NAME': services['aws-rds'][0]['credentials']['db_name'],
             'USER': services['aws-rds'][0]['credentials']['username'],
             'PASSWORD': services['aws-rds'][0]['credentials']['password'],
             'HOST': services['aws-rds'][0]['credentials']['host'],
@@ -175,8 +177,24 @@ if 'VCAP_SERVICES' in os.environ:
     UAA_CLIENT_SECRET = os.environ['UAA_CLIENT_SECRET']
 else:
     # we are in local development mode
-    MEDIA_ROOT='/tmp/tanf'
+    print('local development: using fake UAA')
+    MEDIA_ROOT = '/tmp/tanf'
     UAA_AUTH_URL = 'fake:'
     UAA_TOKEN_URL = 'fake:'
-    UAA_CLIENT_ID = 'fake:'
-    UAA_CLIENT_SECRET = 'fake:'
+    UAA_CLIENT_ID = 'my_fake_client_id'
+    UAA_CLIENT_SECRET = 'my_fake_client_secret'
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': 'DEBUG'
+            },
+        },
+    }

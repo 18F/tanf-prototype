@@ -1,14 +1,14 @@
-# 
+#
 # This function parses the txt files that are sent by STT people to the TDRS
 # app and returns a json document.
 #
-# Possible tricky bits:  
+# Possible tricky bits:
 #  1) We do not parse the fields at all, but just pull them
 #     in as strings.  So we don't do any type parsing or anything.  That might
 #     better be done by code that consumes the json doc and stores it.
-#  2) The social security numbers do not have dashes put into them, which may not
-#     be the way they are parsed/stored in the existing system.
-# 
+#  2) The social security numbers do not have dashes put into them, which may
+#     not be the way they are parsed/stored in the existing system.
+#
 # This code must be run with python 3.6 or above, because it preserves
 # the order of dictionaries, which we need for this to work.
 #
@@ -20,8 +20,6 @@
 import sys
 import json
 import struct
-import collections
-import sys
 import re
 
 
@@ -182,12 +180,13 @@ encryptmap = {
 	'9': 'W',
 	'0': 'T',
 }
-decryptmap = {}
-for k,v in encryptmap.items():
-	decryptmap[v] = k
 
 # This decrypts the ssn using the silly substitution cipher
 def decryptSsn(ssn):
+	decryptmap = {}
+	for k,v in encryptmap.items():
+		decryptmap[v] = k
+
 	result = ''
 	for z in ssn:
 		try:
