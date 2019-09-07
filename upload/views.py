@@ -40,19 +40,22 @@ def upload(request):
 
 def status(request):
     statusmap = {}
-    for i in default_storage.listdir('')[1]:
-        # only show files that are json and owned by the requestor
-        if i.endswith('.json') and i.startswith(str(request.user)):
-            statusfile = i + '.status'
-            try:
-                with default_storage.open(statusfile, 'r') as f:
-                    status = json.load(f)
-                    if len(status) == 0:
-                        statusmap[i] = 'Pass'
-                    else:
-                        statusmap[i] = 'Fail'
-            except:
-                statusmap[i] = 'Stuck'
+    try:
+        for i in default_storage.listdir('')[1]:
+            # only show files that are json and owned by the requestor
+            if i.endswith('.json') and i.startswith(str(request.user)):
+                statusfile = i + '.status'
+                try:
+                    with default_storage.open(statusfile, 'r') as f:
+                        status = json.load(f)
+                        if len(status) == 0:
+                            statusmap[i] = 'Pass'
+                        else:
+                            statusmap[i] = 'Fail'
+                except FileNotFoundError:
+                    statusmap[i] = 'Stuck'
+    except FileNotFoundError:
+        print('FileNotFoundError:  hopefully this is local dev env')
 
     files = sorted(statusmap.items())
 
@@ -68,8 +71,12 @@ def status(request):
 def fileinfo(request, file=None):
     status = []
     statusfile = file + '.status'
-    with default_storage.open(statusfile, 'r') as f:
-        status = json.load(f)
+    try:
+        with default_storage.open(statusfile, 'r') as f:
+            status = json.load(f)
+    except FileNotFoundError:
+        status = ['File processing was interrupted:  data was not imported',
+                  'You will probably want to delete and re-import this file.']
     return render(request, "fileinfo.html", {'status': status})
 
 
@@ -85,7 +92,7 @@ def deletesuccessful(request):
                     # if there are no issues, add it to the list
                     if len(status) == 0:
                         files.append(i)
-            except:
+            except FileNotFoundError:
                 pass
     for file in files:
         statusfile = file + '.status'

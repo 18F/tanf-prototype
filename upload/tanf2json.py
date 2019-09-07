@@ -1,4 +1,4 @@
-# 
+#
 # This function parses the txt files that are sent by STT people to the TDRS
 # app and returns a json document.
 #
@@ -17,7 +17,6 @@
 #     make this parse all record types and all sections.
 #
 
-import sys
 import json
 import struct
 import re

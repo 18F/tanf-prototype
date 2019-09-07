@@ -3,6 +3,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from upload.models import Family, Adult, Child
 from datetime import datetime
+from django.db import transaction
 
 
 # This is where we process the json file
@@ -31,6 +32,7 @@ def validateJson(file):
     return len(issues) == 0
 
 
+@transaction.atomic
 def importJson(file, user):
     data = {}
     with default_storage.open(file, 'r') as f:
@@ -92,4 +94,5 @@ def importJson(file, user):
             )
         child.save()
 
+    # XXX add more record types below here
     return
