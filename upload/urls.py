@@ -9,6 +9,6 @@ urlpatterns = [
     path('deletesuccessful/', views.deletesuccessful, name='deletesuccessful'),
     path('delete/<file>/', views.delete, name='delete'),
     path('delete/<file>/<confirmed>', views.delete, name='delete'),
-    path('viewdata/', views.viewData, name='viewdata'),
+    path('viewtables/', views.viewTables, name='viewtables'),
     path('', views.upload, name='upload'),
 ]

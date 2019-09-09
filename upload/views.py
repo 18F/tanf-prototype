@@ -7,6 +7,7 @@ import datetime
 import json
 from django.apps import apps
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core import serializers
 
 # Create your views here.
 
@@ -128,7 +129,7 @@ def delete(request, file=None):
 
 
 # Look at various things in the tables
-def viewData(request):
+def viewTables(request):
     # choose what table to view
     tablelist = []
     for model in apps.all_models['upload']:
@@ -145,23 +146,33 @@ def viewData(request):
     hitsperpage = request.GET.get('hitsperpage')
     if hitsperpage is None:
         hitsperpage = hitsperpagelist[1]
+    page_no = request.GET.get('page')
     if hitsperpage == 'All':
-        data = alldata
+        # really don't get all of them.  That could be bad.
+        paginator = Paginator(alldata, 1000000)
     else:
-        page_no = request.GET.get('page')
         paginator = Paginator(alldata, int(hitsperpage))
-        try:
-            data = paginator.get_page(page_no)
-        except PageNotAnInteger:
-            data = paginator.get_page(1)
-        except EmptyPage:
-            data = paginator.get_page(paginator.num_pages)
+    try:
+        page = paginator.get_page(page_no)
+    except PageNotAnInteger:
+        page = paginator.get_page(1)
+    except EmptyPage:
+        page = paginator.get_page(paginator.num_pages)
+    data = serializers.serialize("python", page)
+    fields = []
+    for field in mymodel._meta.get_fields():
+        # XXX this seems messy, but the serializer doesn't emit this field
+        # So we need to get rid of it to make the fields align in the table.
+        if field.verbose_name != 'ID':
+            fields.append(field.verbose_name)
 
     context = {
         'tablelist': tablelist,
         'selected_table': table,
         'data': data,
+        'page': page,
+        'fields': fields,
         'hitsperpagelist': hitsperpagelist,
         'selected_hitsperpage': hitsperpage,
     }
-    return render(request, "viewData.html", context)
+    return render(request, "viewTables.html", context)
