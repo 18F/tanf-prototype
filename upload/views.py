@@ -5,6 +5,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import datetime
 import json
+from django.apps import apps
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 # Create your views here.
 
@@ -123,3 +125,43 @@ def delete(request, file=None):
         default_storage.delete(statusfile)
 
     return redirect('status')
+
+
+# Look at various things in the tables
+def viewData(request):
+    # choose what table to view
+    tablelist = []
+    for model in apps.all_models['upload']:
+        tablelist.append(model)
+    table = request.GET.get('table')
+    if table is None:
+        table = tablelist[0]
+
+    mymodel = apps.get_model('upload', table)
+    alldata = mymodel.objects.all()
+
+    # set up pagination here
+    hitsperpagelist = ['All', '20', '100', '200', '500']
+    hitsperpage = request.GET.get('hitsperpage')
+    if hitsperpage is None:
+        hitsperpage = hitsperpagelist[1]
+    if hitsperpage == 'All':
+        data = alldata
+    else:
+        page_no = request.GET.get('page')
+        paginator = Paginator(alldata, int(hitsperpage))
+        try:
+            data = paginator.get_page(page_no)
+        except PageNotAnInteger:
+            data = paginator.get_page(1)
+        except EmptyPage:
+            data = paginator.get_page(paginator.num_pages)
+
+    context = {
+        'tablelist': tablelist,
+        'selected_table': table,
+        'data': data,
+        'hitsperpagelist': hitsperpagelist,
+        'selected_hitsperpage': hitsperpage,
+    }
+    return render(request, "viewData.html", context)
