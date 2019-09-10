@@ -11,5 +11,6 @@ urlpatterns = [
     path('delete/<file>/<confirmed>', views.delete, name='delete'),
     path('viewtables/', views.viewTables, name='viewtables'),
     path('viewquarter/', views.viewquarter, name='viewquarter'),
+    path('download/<file>', views.download, name='download'),
     path('', views.upload, name='upload'),
 ]

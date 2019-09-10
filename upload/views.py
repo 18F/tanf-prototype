@@ -11,6 +11,7 @@ from django.core import serializers
 from itertools import chain
 from background_task.models import Task
 from background_task.models_completed import CompletedTask
+from django.http import HttpResponse, Http404
 
 
 # Create your views here.
@@ -81,6 +82,21 @@ def status(request):
         'filelist': files,
     }
     return render(request, "status.html", context)
+
+
+def download(request, file=None):
+    # XXX probably ought to think about this one to make sure there
+    #     is no way that somebody can download system files or things
+    #     like that.
+    if file.endswith('.json') and file.startswith(str(request.user)):
+        try:
+            with default_storage.open(file, 'r') as f:
+                response = HttpResponse(f.read(), content_type="text/plain")
+                response['Content-Disposition'] = 'inline; filename=' + file
+                return response
+        except FileNotFoundError:
+            raise Http404
+    return redirect('status')
 
 
 # This is where we should be able to delve in and edit data that needs fixing.
