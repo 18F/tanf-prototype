@@ -88,7 +88,7 @@ section1_familydata_fields = {
     "waiver_evaluation_control_gprs": 1,
     "tanffamilyexemptfromtimelimits": 2,
     "tanffamilynewchildonlyfamily": 1,
-    "blank": 39
+    # "blank": 39
 }
 
 # T2 records
@@ -146,7 +146,7 @@ section4_familiesbystratum_fields = {
 trailer_fields = {
     "title": 7,
     "numrecords": 7,
-    "blank": 9
+    # "blank": 9
 }
 
 # The record type definitions end here.
@@ -162,7 +162,6 @@ def parseFields(fieldinfo, linestring):
     fieldstruct = struct.Struct(fmtstring)
     unpack = fieldstruct.unpack_from
     parse = lambda line: tuple(s.decode() for s in unpack(line.encode()))
-
     return dict(zip(fields, parse(linestring)))
 
 
@@ -220,6 +219,11 @@ def tanf2json(f):
 
     for line in f:
         line = line.decode('utf-8')
+
+        # skip blank lines
+        if line in ['\n', '\r\n']:
+            continue
+
         if re.match(r'^T1', line):
             tanfdata['section1_familydata'].append(parseFields(section1_familydata_fields, line))
 

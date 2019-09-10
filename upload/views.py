@@ -8,6 +8,7 @@ import json
 from django.apps import apps
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core import serializers
+from itertools import chain
 
 # Create your views here.
 
@@ -138,6 +139,7 @@ def viewTables(request):
     if table is None:
         table = tablelist[0]
 
+    # Get the model for the selected table and get all the data from it.
     mymodel = apps.get_model('upload', table)
     alldata = mymodel.objects.all()
 
@@ -175,4 +177,53 @@ def viewTables(request):
         'hitsperpagelist': hitsperpagelist,
         'selected_hitsperpage': hitsperpage,
     }
-    return render(request, "viewTables.html", context)
+    return render(request, "viewData.html", context)
+
+
+def viewquarter(request):
+    # enumerate all the available calendarquarters in all tables.
+    # XXX seems like it might be dangerous at scale, in case it
+    # XXX requires full table scans to fulfill these queries.
+    calquarters = []
+    for model in apps.all_models['upload']:
+        mymodel = apps.get_model('upload', model)
+        calquarters = list(set().union(calquarters, mymodel.objects.values_list('calendar_quarter', flat=True)))
+    calquarters.sort()
+    calquarter = request.GET.get('calquarter')
+    if calquarter is None:
+        calquarter = calquarters[0]
+
+    # select all data for the selected calquarter
+    qslist = []
+    for model in apps.all_models['upload']:
+        mymodel = apps.get_model('upload', model)
+        newdata = mymodel.objects.filter(calendar_quarter=calquarter).values_list()
+        qslist.append(newdata)
+    data = list(chain(*qslist))
+
+    # set up pagination here
+    hitsperpagelist = ['All', '20', '100', '200', '500']
+    hitsperpage = request.GET.get('hitsperpage')
+    if hitsperpage is None:
+        hitsperpage = hitsperpagelist[1]
+    page_no = request.GET.get('page')
+    if hitsperpage == 'All':
+        # really don't get all of them.  That could be bad.
+        paginator = Paginator(data, 1000000)
+    else:
+        paginator = Paginator(data, int(hitsperpage))
+    try:
+        page = paginator.get_page(page_no)
+    except PageNotAnInteger:
+        page = paginator.get_page(1)
+    except EmptyPage:
+        page = paginator.get_page(paginator.num_pages)
+
+    context = {
+        'calquarters': calquarters,
+        'selected_calqarter': calquarter,
+        'page': page,
+        'hitsperpagelist': hitsperpagelist,
+        'selected_hitsperpage': hitsperpage,
+    }
+    return render(request, "viewcalquarter.html", context)
