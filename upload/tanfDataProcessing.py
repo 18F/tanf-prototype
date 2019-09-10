@@ -43,7 +43,10 @@ def importJson(file, user):
     # import families
     for i in data['section1_familydata']:
         # first fix up stuff that doesn't fit or requires parsing.
-        del i['blank']
+        try:
+            del i['blank']
+        except KeyError:
+            pass
         i['countyfipscode'] = int(i['countyfipscode'])
 
         # import the family into the db
