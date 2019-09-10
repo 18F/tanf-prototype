@@ -4,7 +4,7 @@
 	<h1>View Data in a Calendar Quarter</h1>
 	<p>View data uploaded to the TANF Data Reporting system!</p>
 
-	<form action="{% url 'viewtables' %}" method="get">
+	<form action="{% url 'viewquarter' %}" method="get">
 	    <p>Calendar Quarter to View:
 		<select name="calquarter" onchange="this.form.submit()">
 		{% for calquarter in calquarters %}

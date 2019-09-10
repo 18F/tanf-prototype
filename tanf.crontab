@@ -1,0 +1,9 @@
+# Restart the queue every 60 minutes
+# If things take longer than 60 minutes to import, we may have to 
+# revisit this.
+#
+# Another way to do this is to set up your CI/CD system to periodically
+# run something like this every hour:
+#    cf run-task tanf python manage.py process_tasks --duration=3540
+#
+*/60 * * * *	python manage.py process_tasks --duration=3540

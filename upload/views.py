@@ -9,6 +9,9 @@ from django.apps import apps
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core import serializers
 from itertools import chain
+from background_task.models import Task
+from background_task.models_completed import CompletedTask
+
 
 # Create your views here.
 
@@ -30,10 +33,6 @@ def upload(request):
         thefile = default_storage.save(filename, ContentFile(tanfdata.encode()))
 
         # process file (validate and store if validation is successful)
-        # XXX If this takes too long to process inline, we will have
-        # XXX to change the code to just store the file and to kick off
-        # XXX a job to process the data.  Other pages will need some
-        # XXX extra code to handle unprocessed jobs too.
         processJson(thefile, user)
 
         # redirect to status page
@@ -48,16 +47,31 @@ def status(request):
         for i in default_storage.listdir('')[1]:
             # only show files that are json and owned by the requestor
             if i.endswith('.json') and i.startswith(str(request.user)):
-                statusfile = i + '.status'
-                try:
-                    with default_storage.open(statusfile, 'r') as f:
-                        status = json.load(f)
-                        if len(status) == 0:
-                            statusmap[i] = 'Pass'
-                        else:
-                            statusmap[i] = 'Fail'
-                except FileNotFoundError:
-                    statusmap[i] = 'Stuck'
+                # Update status if it is queued up
+                taskname = 'upload.tasks.importJson'
+                taskargs = {'file': i, 'user': str(request.user)}
+                taskparams = json.dumps([[], taskargs])
+                completedtasks = CompletedTask.objects.succeeded().filter(task_name=taskname, task_params=taskparams)
+                if completedtasks.count() == 1:
+                    statusmap[i] = 'Imported'
+                else:
+                    mytasks = Task.objects.get_task(task_name=taskname, kwargs=taskargs)
+                    if mytasks.count() == 1:
+                        statusmap[i] = 'Processing'
+                    else:
+                        # The file failed validation or is stuck.
+                        # a .status file should be there to tell us whether it validated properly
+                        statusfile = i + '.status'
+                        try:
+                            with default_storage.open(statusfile, 'r') as f:
+                                status = json.load(f)
+                                if len(status) == 0:
+                                    statusmap[i] = 'Format Validated, Stuck'
+                                else:
+                                    statusmap[i] = 'Invalid Format'
+                        except FileNotFoundError:
+                            statusmap[i] = 'Stuck'
+
     except FileNotFoundError:
         print('FileNotFoundError:  hopefully this is local dev env')
 
@@ -199,6 +213,7 @@ def viewquarter(request):
         mymodel = apps.get_model('upload', model)
         newdata = mymodel.objects.filter(calendar_quarter=calquarter).values_list()
         qslist.append(newdata)
+    # XXX somehow this is not working?
     data = list(chain(*qslist))
 
     # set up pagination here
