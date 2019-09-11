@@ -12,5 +12,6 @@ urlpatterns = [
     path('viewtables/', views.viewTables, name='viewtables'),
     path('viewquarter/', views.viewquarter, name='viewquarter'),
     path('download/<file>', views.download, name='download'),
+    path('download/<file>/<json>/', views.download, name='download'),
     path('', views.upload, name='upload'),
 ]

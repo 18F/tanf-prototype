@@ -11,7 +11,8 @@
 		<tr>
 			<td>{{ status }}</td>
 			<td><a href={% url 'fileinfo' file=f %}>{{ f }}</a></td>
-			<td><a href={% url 'download' file=f %} download>Download</a></td>
+			<td><a href={% url 'download' file=f %} download>Download Original</a></td>
+			<td><a href={% url 'download' file=f json=True %} download>Download JSON</a></td>
 			<td><a href={% url 'delete' file=f %}>DELETE</a></td>
 		</tr>
 	{% endfor %}

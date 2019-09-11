@@ -24,12 +24,16 @@ def about(request):
 def upload(request):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
-        tanfdata = tanf2json(myfile)
-
-        # store tanfdata for processing
         user = str(request.user)
         datestr = datetime.datetime.now().strftime('%Y%m%d%H%M%SZ')
         originalname = myfile.name
+
+        # save a copy of the real original file for download
+        originalfilename = '_'.join([user, datestr, originalname])
+        default_storage.save(originalfilename, myfile)
+
+        # translate data and store it for processing
+        tanfdata = tanf2json(myfile)
         filename = '_'.join([user, datestr, originalname, '.json'])
         thefile = default_storage.save(filename, ContentFile(tanfdata.encode()))
 
@@ -84,11 +88,13 @@ def status(request):
     return render(request, "status.html", context)
 
 
-def download(request, file=None):
+def download(request, file=None, json=None):
     # XXX probably ought to think about this one to make sure there
     #     is no way that somebody can download system files or things
     #     like that.
     if file.endswith('.json') and file.startswith(str(request.user)):
+        if json is None:
+            file = file[:-len('_.json')]
         try:
             with default_storage.open(file, 'r') as f:
                 response = HttpResponse(f.read(), content_type="text/plain")
