@@ -7,11 +7,11 @@
 	<form action="{% url 'viewquarter' %}" method="get">
 	    <p>Calendar Quarter to View:
 		<select name="calquarter" onchange="this.form.submit()">
-		{% for calquarter in calquarters %}
-			{% if selected_calquarter == calquarter %}
-				<option value="{{ calquarter }}" selected>{{ calquarter }}</option>
+		{% for cq in calquarters %}
+			{% if selected_calquarter == cq %}
+				<option value="{{ cq }}" selected>{{ cq }}</option>
 			{% else %}
-				<option value="{{ calquarter }}">{{ calquarter }}</option>
+				<option value="{{ cq }}">{{ cq }}</option>
 			{% endif %}
 		{% endfor %}
 		</select>

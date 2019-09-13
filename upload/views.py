@@ -8,11 +8,10 @@ import json
 from django.apps import apps
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core import serializers
-from itertools import chain
 from background_task.models import Task
 from background_task.models_completed import CompletedTask
 from django.http import HttpResponse, Http404
-
+from upload.querysetchain import QuerySetChain
 
 # Create your views here.
 
@@ -233,10 +232,9 @@ def viewquarter(request):
     qslist = []
     for model in apps.all_models['upload']:
         mymodel = apps.get_model('upload', model)
-        newdata = mymodel.objects.filter(calendar_quarter=calquarter).values_list()
+        newdata = mymodel.objects.filter(calendar_quarter=calquarter)
         qslist.append(newdata)
-    # XXX somehow this is not working?
-    data = list(chain(*qslist))
+    qs = QuerySetChain(qslist)
 
     # set up pagination here
     hitsperpagelist = ['All', '20', '100', '200', '500']
@@ -246,9 +244,9 @@ def viewquarter(request):
     page_no = request.GET.get('page')
     if hitsperpage == 'All':
         # really don't get all of them.  That could be bad.
-        paginator = Paginator(data, 1000000)
+        paginator = Paginator(qs, 1000000)
     else:
-        paginator = Paginator(data, int(hitsperpage))
+        paginator = Paginator(qs, int(hitsperpage))
     try:
         page = paginator.get_page(page_no)
     except PageNotAnInteger:
@@ -256,10 +254,13 @@ def viewquarter(request):
     except EmptyPage:
         page = paginator.get_page(paginator.num_pages)
 
+    data = serializers.serialize("python", page)
+
     context = {
         'calquarters': calquarters,
-        'selected_calqarter': calquarter,
+        'selected_calquarter': int(calquarter),
         'page': page,
+        'data': data,
         'hitsperpagelist': hitsperpagelist,
         'selected_hitsperpage': hitsperpage,
     }
