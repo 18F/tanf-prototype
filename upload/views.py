@@ -234,6 +234,9 @@ def viewquarter(request):
         mymodel = apps.get_model('upload', model)
         newdata = mymodel.objects.filter(calendar_quarter=calquarter)
         qslist.append(newdata)
+    # XXX I am suspicious of this approach.  Not sure that this will
+    # actually introduce some sort of background "pull everything into
+    # memory" thing.  It does seem to be doing a full table scan locally.
     qs = QuerySetChain(qslist)
 
     # set up pagination here

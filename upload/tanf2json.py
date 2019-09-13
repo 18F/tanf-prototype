@@ -217,6 +217,8 @@ def tanf2json(f):
     # This is the list of lines that we couldn't figure out what to do with
     errorlines = []
 
+    # XXX really need to make this write to a stream rather than memory
+    #     Write records into db or files, then serialize into json?
     for line in f:
         line = line.decode('utf-8')
 
