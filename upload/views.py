@@ -1,15 +1,12 @@
 from django.shortcuts import render, redirect
-from upload.tanf2json import tanf2json
-from upload.tanfDataProcessing import processJson
+from upload.tasks import importRecords
 from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 import datetime
 import json
+from json import JSONDecodeError
 from django.apps import apps
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core import serializers
-from background_task.models import Task
-from background_task.models_completed import CompletedTask
 from django.http import HttpResponse, Http404
 from upload.querysetchain import QuerySetChain
 
@@ -27,17 +24,12 @@ def upload(request):
         datestr = datetime.datetime.now().strftime('%Y%m%d%H%M%SZ')
         originalname = myfile.name
 
-        # save a copy of the real original file for download
-        originalfilename = '_'.join([user, datestr, originalname])
+        # save a copy for processing
+        originalfilename = '_'.join([user, datestr, originalname, '.txt'])
         default_storage.save(originalfilename, myfile)
 
-        # translate data and store it for processing
-        tanfdata = tanf2json(myfile)
-        filename = '_'.join([user, datestr, originalname, '.json'])
-        thefile = default_storage.save(filename, ContentFile(tanfdata.encode()))
-
-        # process file (validate and store if validation is successful)
-        processJson(thefile, user)
+        # process file (validate and store records)
+        importRecords(originalfilename, user)
 
         # redirect to status page
         return redirect('status')
@@ -49,35 +41,17 @@ def status(request):
     statusmap = {}
     try:
         for i in default_storage.listdir('')[1]:
-            # only show files that are json and owned by the requestor
-            if i.endswith('.json') and i.startswith(str(request.user)):
-                # Update status if it is queued up
-                taskname = 'upload.tasks.importJson'
-                taskargs = {'file': i, 'user': str(request.user)}
-                taskparams = json.dumps([[], taskargs])
-                completedtasks = CompletedTask.objects.succeeded().filter(task_name=taskname, task_params=taskparams)
-                if completedtasks.count() == 1:
-                    statusmap[i] = 'Imported'
-                else:
-                    mytasks = Task.objects.get_task(task_name=taskname, kwargs=taskargs)
-                    if mytasks.count() == 1:
-                        statusmap[i] = 'Processing'
-                    else:
-                        # The file failed validation or is stuck.
-                        # a .status file should be there to tell us whether it validated properly
-                        statusfile = i + '.status'
-                        try:
-                            with default_storage.open(statusfile, 'r') as f:
-                                status = json.load(f)
-                                if len(status) == 0:
-                                    statusmap[i] = 'Format Validated, Stuck'
-                                else:
-                                    statusmap[i] = 'Invalid Format'
-                        except FileNotFoundError:
-                            statusmap[i] = 'Stuck'
-
-    except FileNotFoundError:
-        print('FileNotFoundError:  hopefully this is local dev env')
+            # only show files that are owned by the requestor
+            if i.endswith('.txt') and i.startswith(str(request.user)):
+                statusfile = i + '.status'
+                try:
+                    with default_storage.open(statusfile, 'r') as f:
+                        status = json.load(f)
+                        statusmap[i] = status['status']
+                except FileNotFoundError:
+                    statusmap[i] = 'Stuck'
+    except FileNotFoundError as e:
+        print('FileNotFoundError:  hopefully this is local dev env', e)
 
     files = sorted(statusmap.items())
 
@@ -91,9 +65,9 @@ def download(request, file=None, json=None):
     # XXX probably ought to think about this one to make sure there
     #     is no way that somebody can download system files or things
     #     like that.
-    if file.endswith('.json') and file.startswith(str(request.user)):
-        if json is None:
-            file = file[:-len('_.json')]
+    if file.endswith('.txt') and file.startswith(str(request.user)):
+        if json is not None:
+            file = file + '.json'
         try:
             with default_storage.open(file, 'r') as f:
                 response = HttpResponse(f.read(), content_type="text/plain")
@@ -110,26 +84,38 @@ def download(request, file=None, json=None):
 def fileinfo(request, file=None):
     status = []
     statusfile = file + '.status'
+    invalidfile = file + '.invalid'
     try:
         with default_storage.open(statusfile, 'r') as f:
-            status = json.load(f)
+            statusdata = json.load(f)
+            status = [statusdata['status']]
     except FileNotFoundError:
-        status = ['File processing was interrupted:  data was not imported',
+        status = ['No status yet.  This probably means the file was interrupted during processing and thus is stuck.',
                   'You will probably want to delete and re-import this file.']
-    return render(request, "fileinfo.html", {'status': status})
+    try:
+        with default_storage.open(invalidfile, 'r') as f:
+            invalidata = json.load(f)
+    except FileNotFoundError:
+        invalidata = []
+
+    context = {
+        'status': status,
+        'invalidata': invalidata
+    }
+    return render(request, "fileinfo.html", context)
 
 
 def deletesuccessful(request):
     files = []
     for i in default_storage.listdir('')[1]:
         # only look at files that are json and owned by the requestor
-        if i.endswith('.json') and i.startswith(str(request.user)):
+        if i.endswith('.txt') and i.startswith(str(request.user)):
             statusfile = i + '.status'
             try:
                 with default_storage.open(statusfile, 'r') as f:
                     status = json.load(f)
                     # if there are no issues, add it to the list
-                    if len(status) == 0:
+                    if status['status'] != 'Failed Validation':
                         files.append(i)
             except FileNotFoundError:
                 pass
@@ -144,22 +130,43 @@ def deletesuccessful(request):
 def delete(request, file=None):
     confirmed = request.GET.get('confirmed')
     statusfile = file + '.status'
+    invalidfile = file + '.invalid'
 
     try:
         with default_storage.open(statusfile, 'r') as f:
             status = json.load(f)
-    except:
-        # XXX probably should say something here about failing to the user
+    except FileNotFoundError:
+        # no status, so probably stuck.  Clean everything.
+        try:
+            default_storage.delete(file)
+        except FileNotFoundError:
+            pass
+        try:
+            default_storage.delete(invalidfile)
+        except FileNotFoundError:
+            pass
         return redirect('status')
+
+    try:
+        with default_storage.open(invalidfile, 'r') as f:
+            invaliditems = json.load(f)
+    except FileNotFoundError:
+        invaliditems = []
+    except JSONDecodeError:
+        invaliditems = ['could not decode json:  may be in the process of dumping issues']
 
     # Get a confirmation if we still have issues with the upload.
     # Otherwise, the import went well, so delete without prompting.
-    if confirmed is None and len(status) > 0:
-        return render(request, "delete.html", {'file': file, 'statusitems': len(status)})
+    if confirmed is None and status['status'] != 'Imported':
+        return render(request, "delete.html", {'file': file, 'invaliditems': len(invaliditems)})
 
     if default_storage.exists(file) and default_storage.exists(statusfile):
         default_storage.delete(file)
         default_storage.delete(statusfile)
+        try:
+            default_storage.delete(invalidfile)
+        except FileNotFoundError:
+            pass
 
     return redirect('status')
 

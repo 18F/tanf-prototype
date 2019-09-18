@@ -8,6 +8,8 @@ class Family(models.Model):
     # metadata
     imported_at = models.DateTimeField('time record was imported (metadata)')
     imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+    valid = models.BooleanField('has record passed validation checks', default=True)
+    invalidreason = models.CharField('Reason(s) why record did not pass validation. (metadata)', max_length=1024, default='')
 
     # header data
     calendar_quarter = models.IntegerField('calendar quarter (header)')
@@ -67,6 +69,8 @@ class Adult(models.Model):
     # metadata
     imported_at = models.DateTimeField('time record was imported (metadata)')
     imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+    valid = models.BooleanField('has record passed validation checks', default=True)
+    invalidreason = models.CharField('Reason(s) why record did not pass validation. (metadata)', max_length=1024, default='')
 
     # header data
     calendar_quarter = models.IntegerField('calendar quarter (header)')
@@ -83,7 +87,65 @@ class Adult(models.Model):
     socialsecuritynumber = models.CharField('social security number (item 33)', max_length=9)
     racehispanic = models.CharField('race/ethnicity: hispanic or latino (item 34a)', max_length=1)
     racenativeamerican = models.CharField('race/ethnicity: american indian or alaska native (item 34b)', max_length=1)
-    # XXX many more fields need to be added here
+    raceasian = models.CharField('race/ethnicity: asian (item 34c)', max_length=1, default='')
+    raceblack = models.CharField('race/ethnicity: black or african american islander (item 34d)', max_length=1, default='')
+    racewhite = models.CharField('race/ethnicity: white (item 34f)', max_length=1, default='')
+    gender = models.IntegerField('gender (item 35)', default=0)
+    oasdibenefits = models.CharField('receives disability benefits: received federal disability insurance benefits under the oasdi program (item 36a)', max_length=1, default='')
+    nonssabenefits = models.CharField('receives disability benefits: receives benefits based on federal disability status under non-ssa programs (item 36b)', max_length=1, default='')
+    titlexivapdtbenefits = models.CharField('receives disability benefits: received aid to the permanently and totally disabled under title xiv-apdt (item 36c)', max_length=1, default='')
+    titlexviaabdbenefits = models.CharField('receives disability benefits: received aid to the aged, blind, and disabled under title xvi-aabd (item 36d)', max_length=1, default='')
+    titlexvissibenefits = models.CharField('receives disability benefits: received ssi under title xvi-ssi (item 36e)', max_length=1, default='')
+    maritalstatus = models.CharField('marital status (item 37)', max_length=1, default='')
+    relationshiptohh = models.IntegerField('relationship to head of household (item 38)', default=0)
+    parentminorchild = models.CharField('parent with minor child in the family (item 39)', max_length=1, default='')
+    pregnantneeds = models.CharField('needs of a pregnant woman (item 40)', max_length=11, default='')
+    educationlevel = models.CharField('education level (item 41)', max_length=12, default='')
+    citizenship = models.CharField('citizenship/alienage (item 42)', max_length=1, default='')
+    coopwithchildsupport = models.CharField('cooperation with child support (item 43)', max_length=1, default='')
+    countablemonths = models.IntegerField('number of countable months toward federal time limit (item 44)', default=0)
+    countablemonthsremaining = models.IntegerField('number of countable months remaining under state/tribe limit (item 45)', default=0)
+    currentmonthexempt = models.CharField('current month exempt from state tirbe time-limit (item 46)', max_length=1, default='')
+    employmentstatus = models.CharField('employment status (item 47)', max_length=1, default='')
+    workeligibleindicator = models.CharField('work eligible individual indicator (item 48)', max_length=2, default='')
+    workparticipationstatus = models.CharField('work participation status (item 49)', max_length=2, default='')
+    unsubsidizedemployment = models.CharField('unsubsidized employment (item 50)', max_length=2, default='')
+    subsidizedprivateemployment = models.CharField('subsidized private employment (item 51)', max_length=2, default='')
+    subsidizedpublicemployment = models.CharField('subsidized public employment (item 52)', max_length=2, default='')
+    workexperiencehours = models.CharField('work experience: hours of participation (item 53a)', max_length=2, default='')
+    workexperienceexcusedabsences = models.CharField('work experience: excused absences (item 53b)', max_length=2, default='')
+    workexperienceholidays = models.CharField('work experience: holidays (item 53c)', max_length=2, default='')
+    onthejobtraining = models.CharField('on the job training (item 54)', max_length=2, default='')
+    jobsearchhours = models.CharField('job search & job readiness: hours of participation (item 55a)', max_length=2, default='')
+    jobsearchexcusedabsences = models.CharField('job search & job readiness: excused absences (item 55b)', max_length=2, default='')
+    jobsearchholidays = models.CharField('job search & job readiness: holidays (item 55c)', max_length=2, default='')
+    communitysvchours = models.CharField('community svs prog: hours of participation (item 56a)', max_length=2, default='')
+    communitysvcexcusedabsences = models.CharField('community svs prog: excused absences (item 56b)', max_length=2, default='')
+    communitysvcholidays = models.CharField('community svs prog: holidays (item 56c)', max_length=2, default='')
+    vocationaltraininghours = models.CharField('vocational education training: hours of participation (item 57a)', max_length=2, default='')
+    vocationaltrainingexcusedabsences = models.CharField('vocational education training: excused absences (item 57b)', max_length=2, default='')
+    vocationaltrainingholidays = models.CharField('vocational education training: holidays (item 57c)', max_length=2, default='')
+    jobskillshours = models.CharField('job skills training employment related: hours of participation (item 58a)', max_length=2, default='')
+    jobskillsexcusedabsences = models.CharField('job skills training employment related: excused absences (item 58b)', max_length=2, default='')
+    jobskillsholidays = models.CharField('job skills training employment related: holidays (item 58c)', max_length=2, default='')
+    eduwithnodiplomahours = models.CharField('education related to employment with no high school diploma: hours of participation (item 59a)', max_length=2, default='')
+    eduwithnodiplomaexcusedabsences = models.CharField('education related to employment with no high school diploma: excused absences (item 59b)', max_length=2, default='')
+    eduwithnodiplomaholidays = models.CharField('education related to employment with no high school diploma: holidays (item 59c)', max_length=2, default='')
+    satisfactoryschoolhours = models.CharField('satisfactory school attendance: hours of participation (item 60a)', max_length=2, default='')
+    satisfactoryschoolexcusedabsences = models.CharField('satisfactory school attendance: excused absences (item 60b)', max_length=2, default='')
+    satisfactoryschoolholidays = models.CharField('satisfactory school attendance: holidays (item 60c)', max_length=2, default='')
+    providingchildcarehours = models.CharField('providing child care: hours of participation (item 61a)', max_length=2, default='')
+    providingchildcareexcusedabsences = models.CharField('providing child care: excused absences (item 61b)', max_length=2, default='')
+    providingchildcareholidays = models.CharField('providing child care: holidays (item 61c)', max_length=2, default='')
+    otherwork = models.CharField('other work activities (item 62)', max_length=2, default='')
+    corehoursforoverallrate = models.CharField('number of deemed core hours for overall rate (item 63)', max_length=2, default='')
+    corehoursfortwoparentrate = models.CharField('number of deemed core hours for the two-parent rate (item 64)', max_length=2, default='')
+    earnedincome = models.IntegerField('amount of earned income (item 65)', default=0)
+    unearnedincomeincometaxcredit = models.CharField('amount of unearned income: earned income tax credit (item 66a)', max_length=2, default='')
+    unearnedincomesocialsecurity = models.CharField('amount of unearned income: social security (item 66b)', max_length=2, default='')
+    unearnedincomessi = models.CharField('amount of unearned income: SSI (item 66c)', max_length=2, default='')
+    unearnedincomeworkerscomp = models.CharField('amount of unearned income: workers compensation (item 66d)', max_length=2, default='')
+    unearnedincomeother = models.CharField('amount of unearned income: other unearned income (item 66e)', max_length=2, default='')
 
 
 # https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section1_10_2008.pdf
@@ -91,6 +153,8 @@ class Child(models.Model):
     # metadata
     imported_at = models.DateTimeField('time record was imported (metadata)')
     imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+    valid = models.BooleanField('has record passed validation checks', default=True)
+    invalidreason = models.CharField('Reason(s) why record did not pass validation. (metadata)', max_length=1024, default='')
 
     # header data
     calendar_quarter = models.IntegerField('calendar quarter (header)')
@@ -101,12 +165,78 @@ class Child(models.Model):
     recordtype = models.CharField('record type (T3)', max_length=2)
     reportingmonth = models.CharField('reporting month (item 4)', max_length=6)
     casenumber = models.CharField('case number (item 6)', max_length=11)
-    familyafilliation = models.IntegerField('family affiliation (item 67)')
-    dateofbirth = models.DateField('date of birth (item 68)')
-    socialsecuritynumber = models.CharField('social security number (item 69)', max_length=9)
-    racehispanic = models.CharField('race/ethnicity: hispanic or latino (item 70a)', max_length=1)
-    racenativeamerican = models.CharField('race/ethnicity: american indian or alaska native (item 70b)', max_length=1)
-    # XXX many more fields need to be added here
+
+    familyafilliation_1 = models.IntegerField('family affiliation1: Child 1,3,5,7,9 (item 67)', default=0)
+    dateofbirth_1 = models.DateField('date of birth (item 68)')
+    socialsecuritynumber_1 = models.CharField('social security number (item 69)', max_length=9, default='')
+    racehispanic_1 = models.CharField('race/ethnicity: hispanic or latino (item 70a)', max_length=1, default='')
+    racenativeamerican_1 = models.CharField('race/ethnicity: american indian or alaska native (item 70b)', max_length=1, default='')
+    raceasian_1 = models.CharField('race/ethnicity: asian (item 70c)', max_length=1, default='')
+    raceblack_1 = models.CharField('race/ethnicity: black or african american islander (item 70d)', max_length=1, default='')
+    racepacific_1 = models.CharField('race/ethnicity: native hawaiian or other pacific islander (item 70e)', max_length=1, default='')
+    racewhite_1 = models.CharField('race/ethnicity: white (item 70f)', max_length=1, default='')
+    gender_1 = models.IntegerField('gender (item 71)', default=0)
+    nonssabenefits_1 = models.CharField('receives disability benefits: receives benefits based on federal disability status under non-ssa programs (item 72a)', max_length=1, default='')
+    titlexvissibenefits_1 = models.CharField('receives disability benefits: received ssi under title xvi-ssi (item 72b)', max_length=1, default='')
+    relationshiptohh_1 = models.IntegerField('relationship to head of household (item 73)', default=0)
+    parentminorchild_1 = models.CharField('parent with minor child in the family (item 74)', max_length=1, default='')
+    educationlevel_1 = models.CharField('education level (item 75)', max_length=12, default='')
+    citizenship_1 = models.CharField('citizenship/alienage (item 76)', max_length=1, default='')
+    unearnedincomessi_1 = models.CharField('amount of unearned income: SSI (item 77a)', max_length=4, default='')
+    unearnedincomeother_1 = models.CharField('amount of unearned income: other unearned income (item 77b)', max_length=4, default='')
+
+    # commenting this out because our sample data does not have these fields,
+    # despite them being in https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section1_10_2008.pdf
+
+    # familyafilliation_2 = models.IntegerField('family affiliation 2: Child 2,4,6,8,10 (item 67)', default=0)
+    # dateofbirth_2 = models.DateField('date of birth (item 68)')
+    # socialsecuritynumber_2 = models.CharField('social security number (item 69)', max_length=9, default='')
+    # racehispanic_2 = models.CharField('race/ethnicity: hispanic or latino (item 70a)', max_length=1, default='')
+    # racenativeamerican_2 = models.CharField('race/ethnicity: american indian or alaska native (item 70b)', max_length=1, default='')
+    # raceasian_2 = models.CharField('race/ethnicity: asian (item 70c)', max_length=1, default='')
+    # raceblack_2 = models.CharField('race/ethnicity: black or african american islander (item 70d)', max_length=1, default='')
+    # racepacific_2 = models.CharField('race/ethnicity: native hawaiian or other pacific islander (item 70e)', max_length=1, default='')
+    # racewhite_2 = models.CharField('race/ethnicity: white (item 70f)', max_length=1, default='')
+    # gender_2 = models.IntegerField('gender (item 71)', default=0)
+    # nonssabenefits_2 = models.CharField('receives disability benefits: receives benefits based on federal disability status under non-ssa programs (item 72a)', max_length=1, default='')
+    # titlexvissibenefits_2 = models.CharField('receives disability benefits: received ssi under title xvi-ssi (item 72b)', max_length=1, default='')
+    # relationshiptohh_2 = models.IntegerField('relationship to head of household (item 73)', default=0)
+    # parentminorchild_2 = models.CharField('parent with minor child in the family (item 74)', max_length=1, default='')
+    # educationlevel_2 = models.CharField('education level (item 75)', max_length=12, default='')
+    # citizenship_2 = models.CharField('citizenship/alienage (item 76)', max_length=1, default='')
+    # unearnedincomessi_2 = models.CharField('amount of unearned income: SSI (item 77a)', max_length=4, default='')
+    # unearnedincomeother_2 = models.CharField('amount of unearned income: other unearned income (item 77b)', max_length=4, default='')
+
+    # jobsearchhours = models.CharField('job search & job readiness: hours of participation (item 55a)', max_length=2, default='')
+    # jobsearchexcusedabsences = models.CharField('job search & job readiness: excused absences (item 55b)', max_length=2, default='')
+    # jobsearchholidays = models.CharField('job search & job readiness: holidays (item 55c)', max_length=2, default='')
+    # communitysvchours = models.CharField('community svs prog: hours of participation (item 56a)', max_length=2, default='')
+    # communitysvcexcusedabsences = models.CharField('community svs prog: excused absences (item 56b)', max_length=2, default='')
+    # communitysvcholidays = models.CharField('community svs prog: holidays (item 56c)', max_length=2, default='')
+    # vocationaltraininghours = models.CharField('vocational education training: hours of participation (item 57a)', max_length=2, default='')
+    # vocationaltrainingexcusedabsences = models.CharField('vocational education training: excused absences (item 57b)', max_length=2, default='')
+    # vocationaltrainingholidays = models.CharField('vocational education training: holidays (item 57c)', max_length=2, default='')
+    # jobskillshours = models.CharField('job skills training employment related: hours of participation (item 58a)', max_length=2, default='')
+    # jobskillsexcusedabsences = models.CharField('job skills training employment related: excused absences (item 58b)', max_length=2, default='')
+    # jobskillsholidays = models.CharField('job skills training employment related: holidays (item 58c)', max_length=2, default='')
+    # eduwithnodiplomahours = models.CharField('education related to employment with no high school diploma: hours of participation (item 59a)', max_length=2, default='')
+    # eduwithnodiplomaexcusedabsences = models.CharField('education related to employment with no high school diploma: excused absences (item 59b)', max_length=2, default='')
+    # eduwithnodiplomaholidays = models.CharField('education related to employment with no high school diploma: holidays (item 59c)', max_length=2, default='')
+    # satisfactoryschoolhours = models.CharField('satisfactory school attendance: hours of participation (item 60a)', max_length=2, default='')
+    # satisfactoryschoolexcusedabsences = models.CharField('satisfactory school attendance: excused absences (item 60b)', max_length=2, default='')
+    # satisfactoryschoolholidays = models.CharField('satisfactory school attendance: holidays (item 60c)', max_length=2, default='')
+    # providingchildcarehours = models.CharField('providing child care: hours of participation (item 61a)', max_length=2, default='')
+    # providingchildcareexcusedabsences = models.CharField('providing child care: excused absences (item 61b)', max_length=2, default='')
+    # providingchildcareholidays = models.CharField('providing child care: holidays (item 61c)', max_length=2, default='')
+    # otherwork = models.CharField('other work activities (item 62)', max_length=2, default='')
+    # corehoursforoverallrate = models.CharField('number of deemed core hours for overall rate (item 63)', max_length=2, default='')
+    # corehoursfortwoparentrate = models.CharField('number of deemed core hours for the two-parent rate (item 64)', max_length=2, default='')
+    # earnedincome = models.CharField('amount of earned income (item 65)', max_length=4, default='')
+    # unearnedincomeincometaxcredit = models.CharField('amount of unearned income: earned income tax credit (item 66a)', max_length=4, default='')
+    # unearnedincomesocialsecurity = models.CharField('amount of unearned income: social security (item 66b)', max_length=4, default='')
+    # unearnedincomessi = models.CharField('amount of unearned income: SSI (item 66c)', max_length=4, default='')
+    # unearnedincomeworkerscomp = models.CharField('amount of unearned income: workers compensation (item 66d)', max_length=4, default='')
+    # unearnedincomeother = models.CharField('amount of unearned income: other unearned income (item 66e)', max_length=4, default='')
 
 
 # https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section2.pdf
@@ -140,6 +270,8 @@ class ClosedPerson(models.Model):
     # metadata
     imported_at = models.DateTimeField('time record was imported (metadata)')
     imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+    valid = models.BooleanField('has record passed validation checks', default=True)
+    invalidreason = models.CharField('Reason(s) why record did not pass validation. (metadata)', max_length=1024, default='')
 
     # header data
     calendar_quarter = models.IntegerField('calendar quarter (header)')
@@ -183,6 +315,8 @@ class AggregatedData(models.Model):
     # metadata
     imported_at = models.DateTimeField('time record was imported (metadata)')
     imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+    valid = models.BooleanField('has record passed validation checks', default=True)
+    invalidreason = models.CharField('Reason(s) why record did not pass validation. (metadata)', max_length=1024, default='')
 
     # header data
     calendar_quarter = models.IntegerField('calendar quarter (header)')
@@ -202,6 +336,9 @@ class AggregatedData(models.Model):
     firstmonthdenied = models.IntegerField('total number of denied applications: first month (item 6)')
     secondmonthdenied = models.IntegerField('total number of denied applications: second month (item 6)')
     thirdmonthdenied = models.IntegerField('total number of denied applications: third month (item 6)')
+    firstmonthassist = models.IntegerField('total amount of assistance: first month (item 7)', default=0)
+    secondmonthassist = models.IntegerField('total amount of assistance: second month (item 7)', default=0)
+    thirdmonthassist = models.IntegerField('total amount of assistance: third month (item 7)', default=0)
     # XXX many more fields need to be added here
 
 
@@ -210,6 +347,8 @@ class FamiliesByStratumData(models.Model):
     # metadata
     imported_at = models.DateTimeField('time record was imported (metadata)')
     imported_by = models.CharField('who record was imported by (metadata)', max_length=64)
+    valid = models.BooleanField('has record passed validation checks', default=True)
+    invalidreason = models.CharField('Reason(s) why record did not pass validation. (metadata)', max_length=1024, default='')
 
     # header data
     calendar_quarter = models.IntegerField('calendar quarter (header)')
