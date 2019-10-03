@@ -5,3 +5,4 @@ boto3
 gunicorn
 django-storages
 django-background-tasks
+cg-django-uaa>=2.0.0

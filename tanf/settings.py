@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'upload.apps.UploadConfig',
     'django.contrib.admin',
     'django.contrib.auth',
+    'uaa_client',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -61,6 +62,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'uaa_client.middleware.UaaRefreshMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -137,7 +139,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# configure things set up by cloudfoundry
+# tanf-specific config
+ALLOWED_HOSTS = ['*']
+
 if 'VCAP_SERVICES' in os.environ:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     servicejson = os.environ['VCAP_SERVICES']
@@ -156,6 +160,31 @@ if 'VCAP_SERVICES' in os.environ:
             'PORT': services['aws-rds'][0]['credentials']['port'],
         }
     }
+
+    # cg-django-uaa config here
+    AUTHENTICATION_BACKENDS = ['uaa_client.authentication.UaaBackend']
+    if 'UAA_CLIENT_ID' in os.environ:
+        UAA_CLIENT_ID = os.environ['UAA_CLIENT_ID']
+    else:
+        UAA_CLIENT_ID = 'XXX'
+    if 'UAA_CLIENT_SECRET' in os.environ:
+        UAA_CLIENT_SECRET = os.environ['UAA_CLIENT_SECRET']
+    else:
+        UAA_CLIENT_SECRET = 'XXX'
+    UAA_APPROVED_DOMAINS = ['gsa.gov']
+    UAA_AUTH_URL = 'https://login.fr.cloud.gov/oauth/authorize'
+    UAA_TOKEN_URL = 'https://uaa.fr.cloud.gov/oauth/token'
+    LOGIN_URL = 'uaa_client:login'
 else:
     # we are in local development mode
     MEDIA_ROOT = '/tmp/tanf'
+
+    # cg-django-uaa config here
+    AUTHENTICATION_BACKENDS = ['uaa_client.authentication.UaaBackend']
+    UAA_CLIENT_ID = 'my_fake_client_id'
+    UAA_CLIENT_SECRET = 'my_fake_client_secret'
+    UAA_APPROVED_DOMAINS = ['gsa.gov']
+    UAA_AUTH_URL = 'fake:'
+    UAA_TOKEN_URL = 'fake:'
+    LOGIN_URL = 'uaa_client:login'
+    WEB_CONCURRENCY = 3
