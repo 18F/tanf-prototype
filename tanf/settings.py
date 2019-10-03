@@ -141,6 +141,22 @@ STATIC_URL = '/static/'
 
 # tanf-specific config
 ALLOWED_HOSTS = ['*']
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'uaa_client': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        }
+    }
+}
 
 if 'VCAP_SERVICES' in os.environ:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
