@@ -159,6 +159,7 @@ LOGGING = {
 }
 
 if 'VCAP_SERVICES' in os.environ:
+    # we are running in cloud.gov
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     servicejson = os.environ['VCAP_SERVICES']
     services = json.loads(servicejson)
@@ -187,7 +188,6 @@ if 'VCAP_SERVICES' in os.environ:
         UAA_CLIENT_SECRET = os.environ['UAA_CLIENT_SECRET']
     else:
         UAA_CLIENT_SECRET = 'XXX'
-    UAA_APPROVED_DOMAINS = ['gsa.gov']
     UAA_AUTH_URL = 'https://login.fr.cloud.gov/oauth/authorize'
     UAA_TOKEN_URL = 'https://uaa.fr.cloud.gov/oauth/token'
     LOGIN_URL = 'uaa_client:login'
@@ -199,7 +199,6 @@ else:
     AUTHENTICATION_BACKENDS = ['uaa_client.authentication.UaaBackend']
     UAA_CLIENT_ID = 'my_fake_client_id'
     UAA_CLIENT_SECRET = 'my_fake_client_secret'
-    UAA_APPROVED_DOMAINS = ['gsa.gov']
     UAA_AUTH_URL = 'fake:'
     UAA_TOKEN_URL = 'fake:'
     LOGIN_URL = 'uaa_client:login'

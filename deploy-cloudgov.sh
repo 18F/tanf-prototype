@@ -1,7 +1,21 @@
 #!/bin/sh
 #
-# This script will attempt to create the services required
-# and then launch everything.
+# This script will deploy the app to cloud.gov.  There are a few different
+# ways to execute this script:
+# 
+# './deploy-cloudgov.sh':  This will just do a default deploy of the app.
+#
+# './deploy-cloudgov.sh resetkeys':  This will reset the keys used for UAA
+# authentication.
+# 
+# './deploy-cloudgov.sh setup': this will set up all the services required
+# to get it going first.
+#
+# `./deploy-cloudgov.sh zdt':  This will do a zero-downtime deploy of the
+# service.  It is meant to be used by a CI/CD deploy system.
+# 
+# `./deploy-cloudgov.sh dbsetup':  This will kick off a job that will do a
+# django db migration.  This can be done by hand, or with CI/CD.
 #
 
 # function to check if a service exists
@@ -56,8 +70,14 @@ fi
 if [ "$1" = "zdt" ] ; then
 	# Do a zero downtime deploy.  This requires enough memory for
 	# two tanf apps to exist in the org/space at one time.
-	# XXX right now, this seems to fail.  Not sure why.
-	cf v3-zdt-push tanf || exit 1
+	if cf plugins | grep blue-green-deploy >/dev/null ; then
+		echo blue-green-deploy plugin already installed
+	else
+		echo "installing blue-green-deploy plugin"
+		cf add-plugin-repo CF-Community https://plugins.cloudfoundry.org
+		cf install-plugin blue-green-deploy -r CF-Community -f
+	fi
+	cf blue-green-deploy tanf -f manifest.yml --delete-old-apps || exit 1
 else
 	cf push || exit 1
 fi
@@ -69,7 +89,7 @@ fi
 
 # set up OIDC stuff
 ROUTE="$(cf apps | grep tanf | awk '{print $6}')"
-if [ -z "$(cf e tanf | grep UAA_CLIENT_SECRET)" ] || [ -n "$RESETKEYS" ] ; then
+if cf e tanf | grep -q UAA_CLIENT_SECRET && [ "$1" = "resetkeys" ] ; then
 	echo 'UAA already set up'
 else
 	if [ -z "$ROUTE" ] ; then
