@@ -14,12 +14,21 @@
     <div class="row">
       <div class="col-sm-2">
       {% block sidebar %}
+        {% if user.is_authenticated %}
+          <p>Welcome, {{ user.email }}!</p>
+        {% endif %}
         <ul class="sidebar-nav">
           <li><a href="{% url 'about' %}">About</a></li>
           <li><a href="{% url 'upload' %}">Upload</a></li>
           <li><a href="{% url 'status' %}">Status</a></li>
           <li><a href="{% url 'viewtables' %}">View Tables</a></li>
           <li><a href="{% url 'viewquarter' %}">View Calendar Quarter</a></li>
+          {% if user.is_superuser %}
+          <li><a href="{% url 'useradmin' %}">User Admin</a></li>
+          {% endif %}
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% endif %}
         </ul>
      {% endblock %}
       </div>

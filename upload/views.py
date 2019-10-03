@@ -10,6 +10,8 @@ from django.core import serializers
 from django.http import HttpResponse, Http404
 from upload.querysetchain import QuerySetChain
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth import logout
 
 
 # Create your views here.
@@ -285,3 +287,14 @@ def viewquarter(request):
         'selected_hitsperpage': hitsperpage,
     }
     return render(request, "viewcalquarter.html", context)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def useradmin(request):
+    pass
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('about')

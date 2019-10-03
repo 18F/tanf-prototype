@@ -13,5 +13,7 @@ urlpatterns = [
     path('viewquarter/', views.viewquarter, name='viewquarter'),
     path('download/<file>', views.download, name='download'),
     path('download/<file>/<json>/', views.download, name='download'),
+    path('useradmin', views.useradmin, name='useradmin'),
+    path('logout', views.logout_view, name='logout'),
     path('', views.upload, name='upload'),
 ]
