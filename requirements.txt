@@ -5,3 +5,4 @@ boto3
 gunicorn
 django-storages
 django-background-tasks
+mozilla-django-oidc

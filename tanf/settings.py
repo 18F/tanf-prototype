@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'upload.apps.UploadConfig',
     'django.contrib.admin',
     'django.contrib.auth',
+    'mozilla_django_oidc',  # Load after auth
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -61,6 +62,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'mozilla_django_oidc.middleware.SessionRefresh',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -137,6 +139,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+AUTHENTICATION_BACKENDS = (
+    'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
+)
+
 # configure things set up by cloudfoundry
 if 'VCAP_SERVICES' in os.environ:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
@@ -156,6 +162,30 @@ if 'VCAP_SERVICES' in os.environ:
             'PORT': services['aws-rds'][0]['credentials']['port'],
         }
     }
+
+    # mozilla oidc client config
+    OIDC_RP_SIGN_ALGO = 'RS256'
+    OIDC_RP_CLIENT_SECRET = os.environ['JWT_KEY']
+    OIDC_OP_JWKS_ENDPOINT = 'https://idp.int.identitysandbox.gov/api/openid_connect/certs'
+    OIDC_RP_CLIENT_ID = os.environ['OIDC_RP_CLIENT_ID']
+    OIDC_OP_AUTHORIZATION_ENDPOINT = "https://idp.int.identitysandbox.gov/openid_connect/authorize"
+    OIDC_OP_TOKEN_ENDPOINT = "https://idp.int.identitysandbox.gov/api/openid_connect/token"
+    OIDC_OP_USER_ENDPOINT = "https://idp.int.identitysandbox.gov/api/openid_connect/userinfo"
+    LOGIN_REDIRECT_URL = "/"
+    LOGOUT_REDIRECT_URL = "/"
+    OIDC_CREATE_USER = False
 else:
     # we are in local development mode
     MEDIA_ROOT = '/tmp/tanf'
+
+    # mozilla oidc client config
+    OIDC_RP_SIGN_ALGO = 'RS256'
+    OIDC_RP_CLIENT_SECRET = os.environ['JWT_KEY']
+    OIDC_OP_JWKS_ENDPOINT = 'https://idp.int.identitysandbox.gov/api/openid_connect/certs'
+    OIDC_RP_CLIENT_ID = os.environ['OIDC_RP_CLIENT_ID']
+    OIDC_OP_AUTHORIZATION_ENDPOINT = "https://idp.int.identitysandbox.gov/openid_connect/authorize"
+    OIDC_OP_TOKEN_ENDPOINT = "https://idp.int.identitysandbox.gov/api/openid_connect/token"
+    OIDC_OP_USER_ENDPOINT = "https://idp.int.identitysandbox.gov/api/openid_connect/userinfo"
+    LOGIN_REDIRECT_URL = "/"
+    LOGOUT_REDIRECT_URL = "/"
+    OIDC_CREATE_USER = True

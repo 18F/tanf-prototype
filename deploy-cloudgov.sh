@@ -44,6 +44,24 @@ if [ "$1" = "setup" ] ; then  echo
 	  	echo $i minutes...
 	  done
 	fi
+
+	if cf e | grep -q JWT_KEY ; then
+		echo jwt cert already created
+	else
+		generate_jwt_cert
+	fi
+fi
+
+generate_jwt_cert() 
+{
+	openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -sha256
+	cf set-env tanf JWT_CERT "$(cat cert.pem)"
+	cf set-env tanf JWT_KEY "$(cat key.pem)"
+}
+
+# regenerate jwt cert
+if [ "$1" = "regenjwt" ] ; then
+	generate_jwt_cert
 fi
 
 # launch the app
