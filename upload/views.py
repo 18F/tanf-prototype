@@ -292,7 +292,7 @@ def viewquarter(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def useradmin(request):
-    pass
+    return redirect('/admin/auth/')
 
 
 def logout_view(request):
