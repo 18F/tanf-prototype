@@ -9,6 +9,10 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core import serializers
 from django.http import HttpResponse, Http404
 from upload.querysetchain import QuerySetChain
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth import logout
+
 
 # Create your views here.
 
@@ -17,6 +21,7 @@ def about(request):
     return render(request, "about.html")
 
 
+@login_required
 def upload(request):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
@@ -37,6 +42,7 @@ def upload(request):
     return render(request, 'upload.html')
 
 
+@login_required
 def status(request):
     statusmap = {}
     try:
@@ -61,6 +67,7 @@ def status(request):
     return render(request, "status.html", context)
 
 
+@login_required
 def download(request, file=None, json=None):
     # XXX probably ought to think about this one to make sure there
     #     is no way that somebody can download system files or things
@@ -81,6 +88,7 @@ def download(request, file=None, json=None):
 # This is where we should be able to delve in and edit data that needs fixing.
 # For now, we will just show the issues, so they can reupload.  Maybe this is
 # better, because this will enforce good data hygiene on the STT end?
+@login_required
 def fileinfo(request, file=None):
     status = []
     statusfile = file + '.status'
@@ -105,6 +113,7 @@ def fileinfo(request, file=None):
     return render(request, "fileinfo.html", context)
 
 
+@login_required
 def deletesuccessful(request):
     files = []
     for i in default_storage.listdir('')[1]:
@@ -127,6 +136,7 @@ def deletesuccessful(request):
     return redirect('status')
 
 
+@login_required
 def delete(request, file=None):
     confirmed = request.GET.get('confirmed')
     statusfile = file + '.status'
@@ -172,6 +182,7 @@ def delete(request, file=None):
 
 
 # Look at various things in the tables
+@login_required
 def viewTables(request):
     # choose what table to view
     tablelist = []
@@ -222,6 +233,7 @@ def viewTables(request):
     return render(request, "viewData.html", context)
 
 
+@login_required
 def viewquarter(request):
     # enumerate all the available calendarquarters in all tables.
     # XXX seems like it might be dangerous at scale, in case it
@@ -275,3 +287,14 @@ def viewquarter(request):
         'selected_hitsperpage': hitsperpage,
     }
     return render(request, "viewcalquarter.html", context)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def useradmin(request):
+    return redirect('/admin/auth/')
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('about')
