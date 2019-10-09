@@ -20,14 +20,18 @@
           <li><a href="{% url 'status' %}">Status</a></li>
           <li><a href="{% url 'viewtables' %}">View Tables</a></li>
           <li><a href="{% url 'viewquarter' %}">View Calendar Quarter</a></li>
+          {% if user.is_superuser %}
+          <li><a href="{% url 'useradmin' %}">User Admin</a></li>
+          {% endif %}
         </ul>
         {% if user.is_authenticated %}
           <p>Current user: {{ user.email }}</p>
-          <form action="{% url 'oidc_logout' %}" method="post">
+          <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
             <input type="submit" value="logout">
           </form>
         {% else %}
-          <a href="{% url 'oidc_authentication_init' %}">Login</a>
+          <a href="{% url 'openid' %}">Login</a>
         {% endif %}
      {% endblock %}
       </div>

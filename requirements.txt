@@ -5,4 +5,5 @@ boto3
 gunicorn
 django-storages
 django-background-tasks
-mozilla-django-oidc
+git+https://github.com/timothy-spencer/django-oidc.git
+python_jwt
