@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'djangooidc',
     'background_task',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -140,6 +141,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# custom user model so we don't have passwords
+AUTH_USER_MODEL = 'users.TANFUser'
 
 # oidc client config
 AUTHENTICATION_BACKENDS = [
