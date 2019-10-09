@@ -231,4 +231,5 @@ else:
     }
 
 # Use this to turn on lots of debugging output
-logging.basicConfig(level=logging.DEBUG)
+if 'DEBUG' in os.environ:
+    logging.basicConfig(level=logging.DEBUG)
