@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.admin.models import LogEntry
 
 from .forms import TANFUserCreationForm, TANFUserChangeForm
 from .models import TANFUser
@@ -24,4 +25,13 @@ class TANFUserAdmin(UserAdmin):
     ordering = ('email',)
 
 
+class LogEntryAdmin(admin.ModelAdmin):
+    readonly_fields = ('content_type', 'user', 'action_time', 'object_id', 'object_repr', 'action_flag', 'change_message')
+    actions = None
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 admin.site.register(TANFUser, TANFUserAdmin)
+admin.site.register(LogEntry, LogEntryAdmin)
