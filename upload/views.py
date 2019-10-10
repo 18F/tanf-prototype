@@ -11,7 +11,6 @@ from django.http import HttpResponse, Http404
 from upload.querysetchain import QuerySetChain
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth import logout
 
 
 # Create your views here.
