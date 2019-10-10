@@ -30,8 +30,6 @@
             {% csrf_token %}
             <input type="submit" value="logout">
           </form>
-        {% else %}
-          <a href="{% url 'openid' %}">Login</a>
         {% endif %}
      {% endblock %}
       </div>
