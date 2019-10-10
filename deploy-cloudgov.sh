@@ -66,10 +66,16 @@ fi
 
 # launch the app
 if [ "$1" = "zdt" ] ; then
+	if cf plugins | grep blue-green-deploy >/dev/null ; then
+		echo blue-green-deploy plugin already installed
+	else
+		cf add-plugin-repo CF-Community https://plugins.cloudfoundry.org
+		cf install-plugin blue-green-deploy -r CF-Community -f
+	fi
+
 	# Do a zero downtime deploy.  This requires enough memory for
 	# two tanf apps to exist in the org/space at one time.
-	# XXX right now, this seems to fail.  Not sure why.
-	cf v3-zdt-push tanf || exit 1
+    cf blue-green-deploy scanner-ui -f manifest.yml --delete-old-apps || exit 1
 else
 	cf push || exit 1
 fi

@@ -3,5 +3,4 @@ venv
 *.sqlite3-journal
 **/__pycache__
 tmp
-cert.pem
-key.pem
+*.pem
