@@ -62,6 +62,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -224,6 +225,8 @@ if 'VCAP_SERVICES' in os.environ:
             'PORT': services['aws-rds'][0]['credentials']['port'],
         }
     }
+    STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+
     # configure the OIDC provider
     # When this gets to production, we will probably want to set this to 'logingov'
     LOGIN_URL = '/openid/openid/logingov_test'
