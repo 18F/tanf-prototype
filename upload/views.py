@@ -243,8 +243,10 @@ def viewquarter(request):
         calquarters = list(set().union(calquarters, mymodel.objects.values_list('calendar_quarter', flat=True)))
     calquarters.sort()
     calquarter = request.GET.get('calquarter')
-    if calquarter is None:
+    if calquarter is None and calquarters:
         calquarter = calquarters[0]
+    else:
+        calquarter = 0
 
     # select all data for the selected calquarter
     qslist = []

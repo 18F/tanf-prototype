@@ -8,7 +8,7 @@ class UsersManagersTests(TestCase):
 
     def test_create_user(self):
         User = get_user_model()
-        user = User.objects._create_user(email='normal@user.com')
+        user = User.objects.create_user(email='normal@user.com')
         self.assertEqual(user.email, 'normal@user.com')
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_staff)
@@ -20,9 +20,9 @@ class UsersManagersTests(TestCase):
         except AttributeError:
             pass
         with self.assertRaises(TypeError):
-            User.objects._create_user()
+            User.objects.create_user()
         with self.assertRaises(ValueError):
-            User.objects._create_user(email='')
+            User.objects.create_user(email='')
 
     def test_create_superuser(self):
         User = get_user_model()

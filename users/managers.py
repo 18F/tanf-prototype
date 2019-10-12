@@ -6,7 +6,7 @@ class TANFUserManager(BaseUserManager):
     Custom user model manager where email is the unique identifiers
     for authentication instead of usernames.
     """
-    def _create_user(self, email, **extra_fields):
+    def create_user(self, email, **extra_fields):
         """
         Create and save a User with the given email and password.
         """
@@ -29,4 +29,4 @@ class TANFUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
-        return self._create_user(email, **extra_fields)
+        return self.create_user(email, **extra_fields)
