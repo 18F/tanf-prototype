@@ -8,8 +8,8 @@ class UsersManagersTests(TestCase):
 
     def test_create_user(self):
         User = get_user_model()
-        user = User.objects.create_user(email='normal@user.com')
-        self.assertEqual(user.email, 'normal@user.com')
+        user = User.objects.create_user(email='tanfnormal@user.com')
+        self.assertEqual(user.email, 'tanfnormal@user.com')
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
@@ -26,8 +26,8 @@ class UsersManagersTests(TestCase):
 
     def test_create_superuser(self):
         User = get_user_model()
-        admin_user = User.objects.create_superuser(email='super@user.com')
-        self.assertEqual(admin_user.email, 'super@user.com')
+        admin_user = User.objects.create_superuser(email='tanfsuper@user.com')
+        self.assertEqual(admin_user.email, 'tanfsuper@user.com')
         self.assertTrue(admin_user.is_active)
         self.assertTrue(admin_user.is_staff)
         self.assertTrue(admin_user.is_superuser)
@@ -39,4 +39,18 @@ class UsersManagersTests(TestCase):
             pass
         with self.assertRaises(ValueError):
             User.objects.create_superuser(
-                email='super@user.com', password='foo', is_superuser=False)
+                email='tanfsuper2@user.com', is_superuser=False)
+
+    def test_create_staffuser(self):
+        User = get_user_model()
+        staff_user = User.objects.create_user(email='tanfstaff@user.com', is_staff=True)
+        self.assertEqual(staff_user.email, 'tanfstaff@user.com')
+        self.assertTrue(staff_user.is_active)
+        self.assertTrue(staff_user.is_staff)
+        self.assertFalse(staff_user.is_superuser)
+        try:
+            # username is None for the AbstractUser option
+            # username does not exist for the AbstractBaseUser option
+            self.assertIsNone(staff_user.username)
+        except AttributeError:
+            pass

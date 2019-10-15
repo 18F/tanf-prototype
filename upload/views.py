@@ -10,7 +10,7 @@ from django.core import serializers
 from django.http import HttpResponse, Http404
 from upload.querysetchain import QuerySetChain
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 # Create your views here.
@@ -290,7 +290,6 @@ def viewquarter(request):
     return render(request, "viewcalquarter.html", context)
 
 
-@login_required
-@user_passes_test(lambda u: u.is_staff)
+@staff_member_required
 def useradmin(request):
     return redirect('/admin/users/tanfuser/')

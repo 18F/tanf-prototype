@@ -10,11 +10,9 @@ class CheckUI(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = TANFUser.objects.create_user(email='user@gsa.gov')
-        cls.superuser = TANFUser.objects.create_superuser(email='superuser@gsa.gov')
-        cls.staffuser = TANFUser.objects.create_user(email='staff@gsa.gov')
-        cls.staffuser.is_staff = True
-        cls.staffuser.save()
+        cls.user = TANFUser.objects.create_user(email='tanfuser@gsa.gov')
+        cls.superuser = TANFUser.objects.create_superuser(email='tanfsuperuser@gsa.gov')
+        cls.staffuser = TANFUser.objects.create_user(email='tanfstaff@gsa.gov', is_staff=True)
 
     def test_about(self):
         """about page has proper data"""
@@ -50,13 +48,15 @@ class CheckUI(TestCase):
 
     def test_staffuser_authentication(self):
         """We cannot get into admin pages if we are not staff or superuser authenticated"""
+        self.assertTrue(self.staffuser.is_staff)
+
         page = '/useradmin'
         response = self.anonymousclient.get(page)
-        self.assertNotEqual(response.status_code, 200)
+        self.assertRedirects(response, '/admin/login/?next=/useradmin', status_code=302, target_status_code=200)
 
         self.client.force_login(self.user)
         response = self.client.get(page)
-        self.assertNotEqual(response.status_code, 200)
+        self.assertRedirects(response, '/admin/login/?next=/useradmin', status_code=302, target_status_code=200)
 
         self.client.force_login(self.superuser)
         response = self.client.get(page)
