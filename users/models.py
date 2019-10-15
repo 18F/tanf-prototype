@@ -24,3 +24,9 @@ class TANFUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+
+        # if we are staff, then we can admin everything!
+        return self.is_staff

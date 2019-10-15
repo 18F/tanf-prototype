@@ -8,7 +8,7 @@ class TANFUserManager(BaseUserManager):
     """
     def create_user(self, email, **extra_fields):
         """
-        Create and save a User with the given email and password.
+        Create and save a User with the given email.
         """
         if not email:
             raise ValueError('The Email must be set')
@@ -19,7 +19,7 @@ class TANFUserManager(BaseUserManager):
 
     def create_superuser(self, email, **extra_fields):
         """
-        Create and save a SuperUser with the given email and password.
+        Create and save a SuperUser with the given email.
         """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)

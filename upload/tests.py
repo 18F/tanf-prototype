@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test import Client
-from users.models import TANFUser
+from django.contrib.auth import get_user_model
 
 # Create your tests here.
 
@@ -10,9 +10,10 @@ class CheckUI(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = TANFUser.objects.create_user(email='tanfuser@gsa.gov')
-        cls.superuser = TANFUser.objects.create_superuser(email='tanfsuperuser@gsa.gov')
-        cls.staffuser = TANFUser.objects.create_user(email='tanfstaff@gsa.gov', is_staff=True)
+        User = get_user_model()
+        cls.user = User.objects.create_user(email='tanfuser@gsa.gov')
+        cls.superuser = User.objects.create_superuser(email='tanfsuperuser@gsa.gov')
+        cls.staffuser = User.objects.create_user(email='tanfstaff@gsa.gov', is_staff=True)
 
     def test_about(self):
         """about page has proper data"""

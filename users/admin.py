@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin.models import LogEntry
+from django.contrib.auth.models import Group
 
 from .forms import TANFUserCreationForm, TANFUserChangeForm
 from .models import TANFUser
@@ -10,7 +11,7 @@ class TANFUserAdmin(UserAdmin):
     add_form = TANFUserCreationForm
     form = TANFUserChangeForm
     model = TANFUser
-    list_display = ('email', 'stt_code', 'is_staff', 'is_active',)
+    list_display = ('email', 'stt_code', 'is_staff', 'is_active', 'last_login',)
     list_filter = ('email', 'is_staff', 'is_active',)
     fieldsets = (
         (None, {'fields': ('email', 'stt_code',)}),
@@ -27,6 +28,7 @@ class TANFUserAdmin(UserAdmin):
 
 class LogEntryAdmin(admin.ModelAdmin):
     readonly_fields = ('content_type', 'user', 'action_time', 'object_id', 'object_repr', 'action_flag', 'change_message')
+    list_display = ('content_type', 'user', 'action_time', 'object_id', 'object_repr', 'action_flag', 'change_message')
     actions = None
 
     def has_delete_permission(self, request, obj=None):
@@ -35,3 +37,4 @@ class LogEntryAdmin(admin.ModelAdmin):
 
 admin.site.register(TANFUser, TANFUserAdmin)
 admin.site.register(LogEntry, LogEntryAdmin)
+admin.site.unregister(Group)
