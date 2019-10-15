@@ -5,6 +5,6 @@ gunicorn
 django-storages
 django-background-tasks
 git+https://github.com/timothy-spencer/pyoidc.git
-git+https://github.com/timothy-spencer/django-oidc.git
+git+https://github.com/koriaf/django-oidc.git
 python_jwt
 whitenoise

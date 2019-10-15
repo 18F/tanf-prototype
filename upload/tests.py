@@ -12,7 +12,9 @@ class CheckUI(TestCase):
     def setUpTestData(cls):
         cls.user = TANFUser.objects.create_user(email='user@gsa.gov')
         cls.superuser = TANFUser.objects.create_superuser(email='superuser@gsa.gov')
-        cls.staffuser = TANFUser.objects.create_superuser(email='staff@gsa.gov')
+        cls.staffuser = TANFUser.objects.create_user(email='staff@gsa.gov')
+        cls.staffuser.is_staff = True
+        cls.staffuser.save()
 
     def test_about(self):
         """about page has proper data"""
@@ -32,6 +34,11 @@ class CheckUI(TestCase):
             self.assertNotIn(v, response.content, msg='anonymous ' + k)
 
             self.client.force_login(self.user)
+            response = self.client.get(k)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(v, response.content, msg='user ' + k)
+
+            self.client.force_login(self.staffuser)
             response = self.client.get(k)
             self.assertEqual(response.status_code, 200)
             self.assertIn(v, response.content, msg='user ' + k)

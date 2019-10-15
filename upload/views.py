@@ -291,6 +291,6 @@ def viewquarter(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_staff)
 def useradmin(request):
     return redirect('/admin/users/tanfuser/')
