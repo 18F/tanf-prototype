@@ -87,7 +87,7 @@ jobs:
             cf auth "$CF_USERNAME" "$CF_PASSWORD"
             cf target -o "$CF_ORG" -s "$CF_SPACE"
 
-            cf run-task tanf python manage.py process_tasks --duration=3540
+            cf run-task tanf "python manage.py process_tasks --duration=3540"
 
 workflows:
   version: 2

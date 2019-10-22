@@ -53,9 +53,9 @@ def status(request):
                     with default_storage.open(statusfile, 'r') as f:
                         status = json.load(f)
                         statusmap[i] = status['status']
-                except FileNotFoundError:
+                except (FileNotFoundError, OSError):
                     statusmap[i] = 'Stuck'
-    except FileNotFoundError as e:
+    except (FileNotFoundError, OSError) as e:
         print('FileNotFoundError:  hopefully this is local dev env', e)
 
     files = sorted(statusmap.items())
@@ -79,7 +79,7 @@ def download(request, file=None, json=None):
                 response = HttpResponse(f.read(), content_type="text/plain")
                 response['Content-Disposition'] = 'inline; filename=' + file
                 return response
-        except FileNotFoundError:
+        except (FileNotFoundError, OSError):
             raise Http404
     return redirect('status')
 
@@ -96,13 +96,13 @@ def fileinfo(request, file=None):
         with default_storage.open(statusfile, 'r') as f:
             statusdata = json.load(f)
             status = [statusdata['status']]
-    except FileNotFoundError:
+    except (FileNotFoundError, OSError):
         status = ['No status yet.  This probably means the file was interrupted during processing and thus is stuck.',
                   'You will probably want to delete and re-import this file.']
     try:
         with default_storage.open(invalidfile, 'r') as f:
             invalidata = json.load(f)
-    except FileNotFoundError:
+    except (FileNotFoundError, OSError):
         invalidata = []
 
     context = {
@@ -125,7 +125,7 @@ def deletesuccessful(request):
                     # if there are no issues, add it to the list
                     if status['status'] != 'Failed Validation':
                         files.append(i)
-            except FileNotFoundError:
+            except (FileNotFoundError, OSError):
                 pass
     for file in files:
         statusfile = file + '.status'
@@ -144,22 +144,22 @@ def delete(request, file=None):
     try:
         with default_storage.open(statusfile, 'r') as f:
             status = json.load(f)
-    except FileNotFoundError:
+    except (FileNotFoundError, OSError):
         # no status, so probably stuck.  Clean everything.
         try:
             default_storage.delete(file)
-        except FileNotFoundError:
+        except (FileNotFoundError, OSError):
             pass
         try:
             default_storage.delete(invalidfile)
-        except FileNotFoundError:
+        except (FileNotFoundError, OSError):
             pass
         return redirect('status')
 
     try:
         with default_storage.open(invalidfile, 'r') as f:
             invaliditems = json.load(f)
-    except FileNotFoundError:
+    except (FileNotFoundError, OSError):
         invaliditems = []
     except JSONDecodeError:
         invaliditems = ['could not decode json:  may be in the process of dumping issues']
@@ -174,7 +174,7 @@ def delete(request, file=None):
         default_storage.delete(statusfile)
         try:
             default_storage.delete(invalidfile)
-        except FileNotFoundError:
+        except (FileNotFoundError, OSError):
             pass
 
     return redirect('status')
