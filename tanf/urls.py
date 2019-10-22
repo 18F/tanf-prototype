@@ -18,6 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('openid/', include('djangooidc.urls')),
     path('', include('upload.urls')),
 ]

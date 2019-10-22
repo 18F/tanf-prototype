@@ -90,7 +90,7 @@ if [ "$1" = "zdt" ] ; then
 
 	# Do a zero downtime deploy.  This requires enough memory for
 	# two tanf apps to exist in the org/space at one time.
-    cf blue-green-deploy scanner-ui -f manifest.yml --delete-old-apps || exit 1
+    cf blue-green-deploy tanf -f manifest.yml --delete-old-apps || exit 1
 else
 	cf push
 
@@ -104,6 +104,11 @@ fi
 # do db migrations if requested
 if [ "$1" = "updatedb" ] || [ -n "$MIGRATEDB" ] ; then
 	cf run-task tanf "python manage.py migrate" --name migrate
+fi
+
+# create a superuser if requested
+if [ "$1" = "createsuperuser" ] && [ -n "$2" ] ; then
+	cf run-task tanf "python manage.py createsuperuser --email $2 --noinput" --name createsuperuser
 fi
 
 # tell people where to go
