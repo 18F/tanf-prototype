@@ -101,5 +101,5 @@ If you would like to connect a GUI client to the database, then you can run
 username/password, and database name for you to configure your client to use. 
 
 Note:
-the credentials will only work and the database will only be accesible while
+the credentials will only work and the database will only be accessible while
 you have your authenticated `connect-to-service` session going.
