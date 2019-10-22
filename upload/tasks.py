@@ -29,7 +29,7 @@ def importRecords(file=None, user=None):
             try:
                 with default_storage.open(file, 'r') as f:
                     tanf2db(f, user)
-            except FileNotFoundError:
+            except (FileNotFoundError, OSError):
                 print('missing file, assuming job was deleted before we could process it:', file)
                 return
             except:
