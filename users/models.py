@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.utils import timezone
+from django.conf import settings
 
 from .managers import TANFUserManager
 
@@ -30,3 +31,10 @@ class TANFUser(AbstractBaseUser, PermissionsMixin):
 
         # if we are staff, then we can admin everything!
         return self.is_staff
+
+    def check_password(self, pw=None):
+        "if we are not doing login.gov, then say they are fine every time"
+        if settings.NOLOGINGOV:
+            return True
+        else:
+            return False

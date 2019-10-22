@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
 
 from . import views
 
@@ -14,5 +15,9 @@ urlpatterns = [
     path('viewquarter/', views.viewquarter, name='viewquarter'),
     path('download/<file>', views.download, name='download'),
     path('download/<file>/<json>/', views.download, name='download'),
-    path('', views.upload, name='upload'),
 ]
+
+if settings.NOLOGINGOV:
+    urlpatterns.append(path('accounts/', include('django.contrib.auth.urls')))
+
+urlpatterns.append(path('', views.upload, name='upload'))
