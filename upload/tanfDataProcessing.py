@@ -2,6 +2,7 @@ import json
 import struct
 import re
 from datetime import datetime
+from django.utils.timezone import make_aware
 from upload.models import Family, Adult, Child, ClosedPerson, AggregatedData, ClosedCase, FamiliesByStratumData
 
 
@@ -473,7 +474,7 @@ def tanf2db(f, user):
     # This is the list of lines that we couldn't figure out what to do with
     errorlines = []
 
-    now = datetime.now()
+    now = make_aware(datetime.now())
     header = {}
     trailer = {}
 
@@ -512,7 +513,7 @@ def tanf2db(f, user):
             data = parseFields(section1_adultdata_fields, line)
 
             # clean up data
-            data['dateofbirth'] = datetime.strptime(data['dateofbirth'], '%Y%m%d').strftime('%Y-%m-%d')
+            data['dateofbirth'] = make_aware(datetime.strptime(data['dateofbirth'], '%Y%m%d')).strftime('%Y-%m-%d')
             if header['encryptionindicator'] == 'E':
                 data['socialsecuritynumber'] = decryptSsn(data['socialsecuritynumber'])
 
@@ -534,9 +535,9 @@ def tanf2db(f, user):
             data = parseFields(section1_childdata_fields, line)
 
             # clean up data
-            data['dateofbirth_1'] = datetime.strptime(data['dateofbirth_1'], '%Y%m%d').strftime('%Y-%m-%d')
+            data['dateofbirth_1'] = make_aware(datetime.strptime(data['dateofbirth_1'], '%Y%m%d')).strftime('%Y-%m-%d')
             try:
-                data['dateofbirth_2'] = datetime.strptime(data['dateofbirth_2'], '%Y%m%d').strftime('%Y-%m-%d')
+                data['dateofbirth_2'] = make_aware(datetime.strptime(data['dateofbirth_2'], '%Y%m%d')).strftime('%Y-%m-%d')
             except KeyError:
                 # This is because our sample data seems not to have all the fields we ought to have,
                 # so we are just handling the situation in case it gets put in later.

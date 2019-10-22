@@ -5,6 +5,9 @@
 # You can run it like ./test.sh nodelete to leave the test env running
 #
 
+# This eliminates some noise while testing
+mkdir -p /tmp/tanf
+
 . ./venv/bin/activate
 export JWT_KEY='XXXNOTAKEYXXX'
 export NOLOGINGOV=TRUE
