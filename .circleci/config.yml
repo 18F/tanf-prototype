@@ -94,7 +94,7 @@ workflows:
   process_tasks:
     triggers:
       - schedule:
-          cron: "*/60 * * * *"
+          cron: "30 * * * *"
           filters:
             branches:
               only:
