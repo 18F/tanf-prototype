@@ -83,3 +83,14 @@ to the build settings:
 * `CF_SPACE`:  This is the space in cloud.gov that you wish to deploy this to.
 * `CF_USERNAME`:  This is the username that you can get with the `cf service-key tanf deployer` command
 * `CF_PASSWORD`:  This is the password that you can get with the `cf service-key tanf deployer` command
+
+Once all this is set up, you can create branches and commit code to them,
+and it will run the tests for you  You can see the results in github, and you can click through to
+see what went wrong if there is a problem.
+
+Once your code is complete and passes tests, you can create a Pull Request (often called a PR)
+to ask that your code be merged into master.  Once that Pull Request has been approved
+and merged in, circleci will do a full build/test/deploy to the cloud.gov account that you
+set up.
+
+Yay!
