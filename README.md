@@ -48,12 +48,15 @@ You can also deploy this application on [cloud.gov](https://cloud.gov/).
   You will also need to set some environment variables:
   	* `cf set-env tanf OIDC_RP_CLIENT_ID <Issuer ID>`
   	* `cf set-env tanf JWT_KEY "$(cat key.pem)"`
+* Create a superuser for you to log in with:  `./deploy-cloudgov.sh createsuperuser your@email.gov`
 * If you want to deploy without login.gov integration:  `cf set-env tanf NOLOGINGOV True`
   Note:  this will make it so that anybody can supply an email address and password and
   get in.  It basically disables authentication.
 
-If you want to update the app, or integrate with CI/CD to automatically push code:
-* Run `./deploy-cloudgov.sh` to push the changes up.
+### Updating the App in cloud.gov
+
+If you want to update the app:
+* Run `./deploy-cloudgov.sh` to push the changes up that are in your current directory.
 * If you also have database schema changes (new columns or changes to existing ones),
   you will need to re-run `./deploy-cloudgov.sh updatedb"`.
 
@@ -65,7 +68,10 @@ The `upload_*` tables are what contain all the data.
 
 ### Set up CI/CD
 
-By default, this is set up to run in [CircleCI](https://circleci.com/).  There is a
+First, make sure that you have already run all the setup to get the app going in
+cloud.gov.
+
+This is set up to run in [CircleCI](https://circleci.com/).  There is a
 `.circleci/config.yml` file which drives this.  If you need to use another CI/CD system,
 feel free to look at this file.  It should be fairly simple to translate this to whatever
 system you need to do this with.

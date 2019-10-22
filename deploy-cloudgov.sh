@@ -106,6 +106,11 @@ if [ "$1" = "updatedb" ] || [ -n "$MIGRATEDB" ] ; then
 	cf run-task tanf "python manage.py migrate" --name migrate
 fi
 
+# create a superuser if requested
+if [ "$1" = "createsuperuser" ] && [ -n "$2" ] ; then
+	cf run-task tanf "python manage.py createsuperuser --email $2 --noinput" --name createsuperuser
+fi
+
 # tell people where to go
 ROUTE="$(cf apps | grep tanf | awk '{print $6}')"
 echo
