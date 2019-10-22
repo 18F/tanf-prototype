@@ -1,8 +1,6 @@
 ---
 applications:
 - name: tanf
-  buildpacks:
-    - python_buildpack
   disk_quota: 768M
   timeout: 180
   services:
@@ -11,6 +9,6 @@ applications:
   memory: 128M
   instances: 1
   random-route: true
-  command: crontab tanf.crontab ; python3 manage.py collectstatic --noinput ; gunicorn -b :8080 tanf.wsgi
+  command: python3 manage.py collectstatic --noinput ; gunicorn -b :8080 tanf.wsgi
   env:
     DISABLE_COLLECTSTATIC: 1
