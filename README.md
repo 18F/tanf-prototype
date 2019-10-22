@@ -29,7 +29,8 @@ The python test suites should run and exit cleanly.
 ## Run this on cloud.gov
 
 You can also deploy this application on [cloud.gov](https://cloud.gov/).
-* You will need to get [credentials for cloud.gov](https://cloud.gov/signup/).
+* You will need to get [credentials for cloud.gov](https://cloud.gov/signup/), as
+  well as [set up the command line cf utility](https://cloud.gov/docs/getting-started/setup/#set-up-the-command-line).
 * Once you have your credentials and are logged in, `./deploy-cloudgov.sh setup`
   sets up all the services required and sets up the database.
 * If you want to deploy this with login.gov authentication, you will need to
