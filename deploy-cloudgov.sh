@@ -90,7 +90,7 @@ if [ "$1" = "zdt" ] ; then
 
 	# Do a zero downtime deploy.  This requires enough memory for
 	# two tanf apps to exist in the org/space at one time.
-    cf blue-green-deploy scanner-ui -f manifest.yml --delete-old-apps || exit 1
+    cf blue-green-deploy tanf -f manifest.yml --delete-old-apps || exit 1
 else
 	cf push
 

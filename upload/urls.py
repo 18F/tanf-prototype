@@ -19,5 +19,7 @@ urlpatterns = [
 
 if settings.NOLOGINGOV:
     urlpatterns.append(path('accounts/', include('django.contrib.auth.urls')))
+else:
+    urlpatterns.append(path('openid/', include('djangooidc.urls')))
 
 urlpatterns.append(path('', views.upload, name='upload'))
