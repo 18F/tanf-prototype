@@ -91,7 +91,9 @@ jobs:
 
 workflows:
   version: 2
-  process_tasks:
+  hourly:
+    jobs:
+      - process_tasks
     triggers:
       - schedule:
           cron: "30 * * * *"
