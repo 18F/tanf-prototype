@@ -64,9 +64,43 @@ jobs:
             cf target -o "$CF_ORG" -s "$CF_SPACE"
             ./deploy-cloudgov.sh zdt
 
+  process_tasks:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          <<: *installcf
+      - run:
+          name: run process_tasks in the background
+          command: |
+            # If we do not specify a space, then deploy to the branch that we are on.
+            # This lets you have dev/staging/master branches that automatically go to the right place.
+            if [ -z "$CF_SPACE" ] ; then
+              export CF_SPACE="$CIRCLE_BRANCH"
+            fi
+            if [ -z "$CF_ORG" ] ; then
+              echo CF_ORG not set, aborting
+              exit 1
+            fi
+            cf api https://api.fr.cloud.gov
+            cf auth "$CF_USERNAME" "$CF_PASSWORD"
+            cf target -o "$CF_ORG" -s "$CF_SPACE"
+
+            cf run-task tanf python manage.py process_tasks --duration=3540
 
 workflows:
   version: 2
+  hourly:
+    jobs:
+      - process_tasks
+    triggers:
+      - schedule:
+          cron: "30 * * * *"
+          filters:
+            branches:
+              only:
+                - master
   build_test_deploy:
     jobs:
       - build
