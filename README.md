@@ -86,8 +86,19 @@ to ask that your code be merged into master.  Once that Pull Request has been ap
 and merged in, circleci will do a full build/test/deploy to the cloud.gov account that you
 set up.
 
-## Connect to the database
+## Connect to the database in cloud.gov
 
-You can get into the database in cloud.gov by doing `cf connect-to-service tanf tanf-db`.
+First, you will need to install the [cf connect-to-service plugin](https://github.com/18F/cf-service-connect).
+
+After this is installed, you can get into the database in cloud.gov by doing
+`cf connect-to-service tanf tanf-db`.
 This will give you a postgres psql prompt, and you can do whatever queries you want.
 The `upload_*` tables are what contain all the data.
+
+If you would like to connect a GUI client to the database, then you can run
+`cf connect-to-service --no-client tanf tanf-db`, and it will supply you with the host/port,
+username/password, and database name for you to configure your client to use. 
+
+Note:
+the credentials will only work and the database will only be accesible while
+you have your authenticated `connect-to-service` session going.
