@@ -53,18 +53,11 @@ You can also deploy this application on [cloud.gov](https://cloud.gov/).
   Note:  this will make it so that anybody can supply an email address and password and
   get in.  It basically disables authentication.
 
-### Updating the App in cloud.gov
+### Updating the App in cloud.gov by hand
 
-If you want to update the app:
-* Run `./deploy-cloudgov.sh` to push the changes up that are in your current directory.
-* If you also have database schema changes (new columns or changes to existing ones),
-  you will need to re-run `./deploy-cloudgov.sh updatedb"`.
-
-### Connect to the database
-
-You can get into the database by doing `cf connect-to-service tanf tanf-db`.
-This will give you a postgres psql prompt, and you can do whatever queries you want.
-The `upload_*` tables are what contain all the data.
+If you want to update the app, run `./deploy-cloudgov.sh` to push the changes
+up that are in your current directory.  Database migrations will automatically be
+run after each deploy.  This will cause a minute or two of downtime.
 
 ### Set up CI/CD
 
@@ -93,4 +86,8 @@ to ask that your code be merged into master.  Once that Pull Request has been ap
 and merged in, circleci will do a full build/test/deploy to the cloud.gov account that you
 set up.
 
-Yay!
+## Connect to the database
+
+You can get into the database in cloud.gov by doing `cf connect-to-service tanf tanf-db`.
+This will give you a postgres psql prompt, and you can do whatever queries you want.
+The `upload_*` tables are what contain all the data.
