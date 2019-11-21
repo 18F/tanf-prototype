@@ -148,6 +148,8 @@ section1_adultdata_fields = {
 }
 
 # T3 records
+# These are the full fields as depicted in
+# https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section1_10_2008.pdf
 section1_childdata_fields = {
     "recordtype": 2,
     "reportingmonth": 6,
@@ -172,59 +174,133 @@ section1_childdata_fields = {
     "unearnedincomessi_1": 4,
     "unearnedincomeother_1": 4,
 
-    # commenting this out because our example data is missing it
-    # "familyafilliation_2": 1,
-    # "dateofbirth_2": 8,
-    # "socialsecuritynumber_2": 9,
-    # "racehispanic_2": 1,
-    # "racenativeamerican_2": 1,
-    # "raceasian_2": 1,
-    # "raceblack_2": 1,
-    # "racepacific_2": 1,
-    # "racewhite_2": 1,
-    # "gender_2": 1,
-    # "nonssabenefits_2": 1,
-    # "titlexvissibenefits_2": 1,
-    # "relationshiptohh_2": 2,
-    # "parentminorchild_2": 1,
-    # "educationlevel_2": 2,
-    # "citizenship_2": 1,
-    # "unearnedincomessi_2": 4,
-    # "unearnedincomeother_2": 4,
+    "familyafilliation_2": 1,
+    "dateofbirth_2": 8,
+    "socialsecuritynumber_2": 9,
+    "racehispanic_2": 1,
+    "racenativeamerican_2": 1,
+    "raceasian_2": 1,
+    "raceblack_2": 1,
+    "racepacific_2": 1,
+    "racewhite_2": 1,
+    "gender_2": 1,
+    "nonssabenefits_2": 1,
+    "titlexvissibenefits_2": 1,
+    "relationshiptohh_2": 2,
+    "parentminorchild_2": 1,
+    "educationlevel_2": 2,
+    "citizenship_2": 1,
+    "unearnedincomessi_2": 4,
+    "unearnedincomeother_2": 4,
 
-    # "blank": 55,
+    "blank": 55,
 
-    # "jobsearchhours": 2,
-    # "jobsearchexcusedabsences": 2,
-    # "jobsearchholidays": 2,
-    # "communitysvchours": 2,
-    # "communitysvcexcusedabsences": 2,
-    # "communitysvcholidays": 2,
-    # "vocationaltraininghours": 2,
-    # "vocationaltrainingexcusedabsences": 2,
-    # "vocationaltrainingholidays": 2,
-    # "jobskillshours": 2,
-    # "jobskillsexcusedabsences": 2,
-    # "jobskillsholidays": 2,
-    # "eduwithnodiplomahours": 2,
-    # "eduwithnodiplomaexcusedabsences": 2,
-    # "eduwithnodiplomaholidays": 2,
-    # "satisfactoryschoolhours": 2,
-    # "satisfactoryschoolexcusedabsences": 2,
-    # "satisfactoryschoolholidays": 2,
-    # "providingchildcarehours": 2,
-    # "providingchildcareexcusedabsences": 2,
-    # "providingchildcareholidays": 2,
-    # "otherwork": 2,
-    # "corehoursforoverallrate": 2,
-    # "corehoursfortwoparentrate": 2,
-    # "earnedincome": 4,
-    # "unearnedincomeincometaxcredit": 4,
-    # "unearnedincomesocialsecurity": 4,
-    # "unearnedincomessi": 4,
-    # "unearnedincomeworkerscomp": 4,
-    # "unearnedincomeother": 4,
+    "jobsearchhours": 2,
+    "jobsearchexcusedabsences": 2,
+    "jobsearchholidays": 2,
+    "communitysvchours": 2,
+    "communitysvcexcusedabsences": 2,
+    "communitysvcholidays": 2,
+    "vocationaltraininghours": 2,
+    "vocationaltrainingexcusedabsences": 2,
+    "vocationaltrainingholidays": 2,
+    "jobskillshours": 2,
+    "jobskillsexcusedabsences": 2,
+    "jobskillsholidays": 2,
+    "eduwithnodiplomahours": 2,
+    "eduwithnodiplomaexcusedabsences": 2,
+    "eduwithnodiplomaholidays": 2,
+    "satisfactoryschoolhours": 2,
+    "satisfactoryschoolexcusedabsences": 2,
+    "satisfactoryschoolholidays": 2,
+    "providingchildcarehours": 2,
+    "providingchildcareexcusedabsences": 2,
+    "providingchildcareholidays": 2,
+    "otherwork": 2,
+    "corehoursforoverallrate": 2,
+    "corehoursfortwoparentrate": 2,
+    "earnedincome": 4,
+    "unearnedincomeincometaxcredit": 4,
+    "unearnedincomesocialsecurity": 4,
+    "unearnedincomessi": 4,
+    "unearnedincomeworkerscomp": 4,
+    "unearnedincomeother": 4,
 }
+
+# T3 records:  Our example data seems to be missing a character and is otherwise truncated,
+#      so let's hope that 3 chars for the last field is OK.
+section1_childdata_fields_exampledata = {
+    "recordtype": 2,
+    "reportingmonth": 6,
+    "casenumber": 11,
+
+    "familyafilliation_1": 1,
+    "dateofbirth_1": 8,
+    "socialsecuritynumber_1": 9,
+    "racehispanic_1": 1,
+    "racenativeamerican_1": 1,
+    "raceasian_1": 1,
+    "raceblack_1": 1,
+    "racepacific_1": 1,
+    "racewhite_1": 1,
+    "gender_1": 1,
+    "nonssabenefits_1": 1,
+    "titlexvissibenefits_1": 1,
+    "relationshiptohh_1": 2,
+    "parentminorchild_1": 1,
+    "educationlevel_1": 2,
+    "citizenship_1": 1,
+    "unearnedincomessi_1": 4,
+    "unearnedincomeother_1": 3,
+}
+
+# T3 records:  Our example data seems to be missing a character, sometimes
+#      has 2 children in it and is also truncated,
+#      so let's hope that 3 chars for the last field of the first child is OK.
+section1_childdata_fields_twochild = {
+    "recordtype": 2,
+    "reportingmonth": 6,
+    "casenumber": 11,
+
+    "familyafilliation_1": 1,
+    "dateofbirth_1": 8,
+    "socialsecuritynumber_1": 9,
+    "racehispanic_1": 1,
+    "racenativeamerican_1": 1,
+    "raceasian_1": 1,
+    "raceblack_1": 1,
+    "racepacific_1": 1,
+    "racewhite_1": 1,
+    "gender_1": 1,
+    "nonssabenefits_1": 1,
+    "titlexvissibenefits_1": 1,
+    "relationshiptohh_1": 2,
+    "parentminorchild_1": 1,
+    "educationlevel_1": 2,
+    "citizenship_1": 1,
+    "unearnedincomessi_1": 4,
+    "unearnedincomeother_1": 3,
+
+    "familyafilliation_2": 1,
+    "dateofbirth_2": 8,
+    "socialsecuritynumber_2": 9,
+    "racehispanic_2": 1,
+    "racenativeamerican_2": 1,
+    "raceasian_2": 1,
+    "raceblack_2": 1,
+    "racepacific_2": 1,
+    "racewhite_2": 1,
+    "gender_2": 1,
+    "nonssabenefits_2": 1,
+    "titlexvissibenefits_2": 1,
+    "relationshiptohh_2": 2,
+    "parentminorchild_2": 1,
+    "educationlevel_2": 2,
+    "citizenship_2": 1,
+    "unearnedincomessi_2": 4,
+    "unearnedincomeother_2": 4,
+}
+
 
 # T4 records
 section2_closedcase_fields = {
@@ -334,13 +410,14 @@ def decryptSsn(ssn):
     for z in ssn:
         try:
             result = result + decryptmap[z]
-        except:
+        except Exception:
             result = result + z
     # # Put dashes into SSN
     # if len(result) == 9:
     #   result = result[:5] + '-' + result[5:]
     #   result = result[:3] + '-' + result[3:]
     return result
+
 
 #
 # This function parses the txt files that are sent by STT people to the TDRS
@@ -479,14 +556,22 @@ def tanf2db(f, user):
     trailer = {}
 
     for line in f:
-        # line = line.decode('utf-8')
+        # different environments can result in a string or bytes, so decode if we need to
+        try:
+            line = line.decode().rstrip()
+        except (UnicodeDecodeError, AttributeError):
+            line = line.rstrip()
 
         # skip blank lines
         if line in ['\n', '\r\n']:
             continue
 
         if re.match(r'^T1', line):
-            data = parseFields(section1_familydata_fields, line)
+            try:
+                data = parseFields(section1_familydata_fields, line)
+            except Exception as e:
+                print('Parsing T1:', e, line)
+                raise e
 
             # clean up data
             try:
@@ -497,20 +582,27 @@ def tanf2db(f, user):
 
             # store data
             check = section1_familydata_check(data)
-            family = Family.objects.create(
-                imported_at=now,
-                imported_by=user,
-                valid=check['check'],
-                invalidreason=check['reasons'],
-                calendar_quarter=header['calendarquarter'],
-                state_code=header['statefipscode'],
-                tribe_code=header['tribecode'],
-                **data
-                )
+            try:
+                family = Family.objects.create(
+                    imported_at=now,
+                    imported_by=user,
+                    valid=check['check'],
+                    invalidreason=check['reasons'],
+                    calendar_quarter=header['calendarquarter'],
+                    state_code=header['statefipscode'],
+                    tribe_code=header['tribecode'],
+                    **data)
+            except Exception as e:
+                print('Creating Family object:', e, line)
+                raise e
             family.save()
 
         elif re.match(r'^T2', line):
-            data = parseFields(section1_adultdata_fields, line)
+            try:
+                data = parseFields(section1_adultdata_fields, line)
+            except Exception as e:
+                print('Parsing T2:', e, line)
+                raise e
 
             # clean up data
             data['dateofbirth'] = make_aware(datetime.strptime(data['dateofbirth'], '%Y%m%d')).strftime('%Y-%m-%d')
@@ -519,20 +611,39 @@ def tanf2db(f, user):
 
             # store data
             check = section1_adultdata_check(data)
-            adult = Adult.objects.create(
-                imported_at=now,
-                imported_by=user,
-                valid=check['check'],
-                invalidreason=check['reasons'],
-                calendar_quarter=header['calendarquarter'],
-                state_code=header['statefipscode'],
-                tribe_code=header['tribecode'],
-                **data
-                )
+            try:
+                adult = Adult.objects.create(
+                    imported_at=now,
+                    imported_by=user,
+                    valid=check['check'],
+                    invalidreason=check['reasons'],
+                    calendar_quarter=header['calendarquarter'],
+                    state_code=header['statefipscode'],
+                    tribe_code=header['tribecode'],
+                    **data)
+            except Exception as e:
+                print('Creating Adult object:', e, '"', line, '"')
+                raise e
             adult.save()
 
         elif re.match(r'^T3', line):
-            data = parseFields(section1_childdata_fields, line)
+            # Child fields seem to be strangely variable, and in our example data, not
+            # compliant with the spec.  Thus, we try a few different field configs.
+            try:
+                # This is the full spec with all the fields
+                data = parseFields(section1_childdata_fields, line)
+            except Exception:
+                try:
+                    # This is truncated at 59 characters (should be 60) so seems to be for one child
+                    data = parseFields(section1_childdata_fields_exampledata, line)
+                except Exception:
+                    try:
+                        # This is truncated at 100 chars.  For 2 children, it seems?
+                        data = parseFields(section1_childdata_fields_twochild, line)
+                    except Exception as e:
+                        # Default:  throw up our hands in exasperation.
+                        print('Parsing T3:', e, line)
+                        raise e
 
             # clean up data
             data['dateofbirth_1'] = make_aware(datetime.strptime(data['dateofbirth_1'], '%Y%m%d')).strftime('%Y-%m-%d')
@@ -556,29 +667,39 @@ def tanf2db(f, user):
                 pass
 
             check = section1_childdata_check(data)
-            child = Child.objects.create(
-                imported_at=now,
-                imported_by=user,
-                valid=check['check'],
-                invalidreason=check['reasons'],
-                calendar_quarter=header['calendarquarter'],
-                state_code=header['statefipscode'],
-                tribe_code=header['tribecode'],
-                # This is where all the json data gets added in
-                **data
-                )
+            try:
+                child = Child.objects.create(
+                    imported_at=now,
+                    imported_by=user,
+                    valid=check['check'],
+                    invalidreason=check['reasons'],
+                    calendar_quarter=header['calendarquarter'],
+                    state_code=header['statefipscode'],
+                    tribe_code=header['tribecode'],
+                    # This is where all the json data gets added in
+                    **data)
+            except Exception as e:
+                print('Creating Child object:', e, line)
+                raise e
             child.save()
 
         elif re.match(r'^T4', line):
-            data = parseFields(section2_closedcase_fields, line)
-            closedcase = ClosedCase.objects.create(
-                imported_at=now,
-                imported_by=user,
-                calendar_quarter=header['calendarquarter'],
-                state_code=header['statefipscode'],
-                tribe_code=header['tribecode'],
-                **data
-                )
+            try:
+                data = parseFields(section2_closedcase_fields, line)
+            except Exception as e:
+                print('Parsing T4:', e, line)
+                raise e
+            try:
+                closedcase = ClosedCase.objects.create(
+                    imported_at=now,
+                    imported_by=user,
+                    calendar_quarter=header['calendarquarter'],
+                    state_code=header['statefipscode'],
+                    tribe_code=header['tribecode'],
+                    **data)
+            except Exception as e:
+                print('Creating ClosedCase object:', e, line)
+                raise e
             closedcase.save()
 
             Family.objects.filter(calendar_quarter=header['calendarquarter'], casenumber=data['casenumber'], countyfipscode=data['countyfipscode'], zipcode=data['zipcode']).delete()
@@ -599,8 +720,7 @@ def tanf2db(f, user):
                 calendar_quarter=header['calendarquarter'],
                 state_code=header['statefipscode'],
                 tribe_code=header['tribecode'],
-                **data
-                )
+                **data)
             closedperson.save()
 
             Adult.objects.filter(calendar_quarter=header['calendarquarter'], casenumber=data['casenumber'], socialsecuritynumber=data['socialsecuritynumber']).delete()
@@ -614,8 +734,7 @@ def tanf2db(f, user):
                 calendar_quarter=header['calendarquarter'],
                 state_code=header['statefipscode'],
                 tribe_code=header['tribecode'],
-                **data
-                )
+                **data)
             aggregatedata.save()
 
         elif re.match(r'^T7', line):
@@ -626,8 +745,7 @@ def tanf2db(f, user):
                 calendar_quarter=header['calendarquarter'],
                 state_code=header['statefipscode'],
                 tribe_code=header['tribecode'],
-                **data
-                )
+                **data)
             stratumdata.save()
 
         elif re.match(r'^HEADER', line):

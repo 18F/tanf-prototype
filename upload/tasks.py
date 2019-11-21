@@ -32,7 +32,8 @@ def importRecords(file=None, user=None):
             except (FileNotFoundError, OSError):
                 print('missing file, assuming job was deleted before we could process it:', file)
                 return
-            except:
+            except Exception as e:
+                print('Import Error:', e)
                 status = {'status': 'Error While Importing'}
                 default_storage.delete(statusfile)
                 default_storage.save(statusfile, ContentFile(json.dumps(status).encode()))
@@ -55,20 +56,22 @@ def importRecords(file=None, user=None):
                 # Write out an invalid file with all the invalid stuff.
                 invalidfile = file + '.invalid'
                 with default_storage.open(invalidfile, 'w') as f:
-                    f.write('[')
-                    for i in Family.objects.filter(valid=False).values():
-                        f.write(json.dumps(list(i), cls=DjangoJSONEncoder))
-                    for i in Adult.objects.filter(valid=False):
-                        f.write(json.dumps(list(i), cls=DjangoJSONEncoder))
-                    for i in Child.objects.filter(valid=False):
-                        f.write(json.dumps(list(i), cls=DjangoJSONEncoder))
-                    for i in ClosedPerson.objects.filter(valid=False):
-                        f.write(json.dumps(list(i), cls=DjangoJSONEncoder))
-                    for i in AggregatedData.objects.filter(valid=False):
-                        f.write(json.dumps(list(i), cls=DjangoJSONEncoder))
-                    for i in FamiliesByStratumData.objects.filter(valid=False):
-                        f.write(json.dumps(list(i), cls=DjangoJSONEncoder))
-                    f.write(']')
+                    invalidstring = '["invalid: ' + str(invalidcount) + '"]'
+                    f.write(invalidstring)
+                    # XXX write out the invalid records
+                    # f.write('[')
+                    # f.write(json.dumps(Family.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
+                    # f.write(',')
+                    # f.write(json.dumps(Adult.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
+                    # f.write(',')
+                    # f.write(json.dumps(Child.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
+                    # f.write(',')
+                    # f.write(json.dumps(ClosedPerson.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
+                    # f.write(',')
+                    # f.write(json.dumps(AggregatedData.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
+                    # f.write(',')
+                    # f.write(json.dumps(FamiliesByStratumData.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
+                    # f.write(']')
                 raise TANFDataImport('invalid records: rolling back')
             else:
                 status = {'status': 'Imported'}
