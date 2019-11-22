@@ -1,5 +1,5 @@
 documentation_complete: true
-name: upload
+name: TANF Upload Prototype App
 schema_version: 3.1.0
 references:
   - name: upload prototype app
