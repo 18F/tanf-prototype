@@ -9,7 +9,7 @@ docker-compose down
 docker-compose up -d --build
 
 # find the container name:
-CONTAINER=$(docker-compose images | awk '/tanf-prototype_tanf/ {print $1}')
+CONTAINER=$(docker-compose images | awk '/tanf/ {print $1}')
 
 # Wait until it is running
 echo waiting until "$CONTAINER" is running
