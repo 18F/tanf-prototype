@@ -12,7 +12,7 @@ least think carefully about the contents of that section with "XXX".
 
 # SSP Template
 
-Most ATOs start out by working with your CIO to get an ISSO assigned to you who
+Most ATOs start out by working with your CISO to get an ISSO assigned to you who
 can work with you on filling out your System Security Plan (SSP).  They usually
 have a template which you can fill out which document some information about
 your system and then documentation about a few NIST-800-53 controls which are
