@@ -12,6 +12,6 @@ services:
     command: python3 manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
-  zaproxy:
-    image: owasp/zap2docker-weekly
-    command: sleep 3600
+  # zaproxy:
+  #   image: owasp/zap2docker-weekly
+  #   command: sleep 3600
