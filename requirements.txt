@@ -1,10 +1,9 @@
-Django>=2.2.4
+Django>=2.2.4,<3
 psycopg2
 boto3
 gunicorn
 django-storages
 django-background-tasks
-git+https://github.com/timothy-spencer/pyoidc.git
 git+https://github.com/koriaf/django-oidc.git
 python_jwt
 whitenoise

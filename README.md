@@ -17,6 +17,7 @@ to get this going:
 * Create a superuser: `NOLOGINGOV=TRUE DEBUG=true ./manage.py createsuperuser`  Add your
   email address.
 * Run the app!  `NOLOGINGOV=TRUE DEBUG=true ./manage.py runserver`
+* You should be able to access the app on http://localhost:8000/
 
 ### Testing
 All good applications should be tested.  Here's how you can execute the tests after your

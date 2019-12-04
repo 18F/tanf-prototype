@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  tanf:
+    build: .
+    environment:
+      JWT_KEY: "XXXNOTAKEYXXX"
+      NOLOGINGOV: "true"
+      DEBUG: "true"
+      OIDC_RP_CLIENT_ID: "urn:gov:gsa:openidconnect.profiles:sp:sso:xxx:xxx"
+      SECRET_KEY: "XXXNOTAKEYXXX"
+    command: python3 manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+  # zaproxy:
+  #   image: owasp/zap2docker-weekly
+  #   command: sleep 3600
