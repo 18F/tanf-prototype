@@ -5,18 +5,17 @@
 # You can run it like ./test.sh nodelete to leave the test env running
 #
 
+# Set some secrets up
+export MINIO_SECRET_KEY=$(date +%s | sha256sum | base64 | head -c 40)
+export MINIO_ACCESS_KEY=$(date +%s | sha256sum | base64 | head -c 20)
+
 docker-compose down
 docker-compose up -d --build
+docker-compose run tanf ./wait-for postgres:5432 -- python3 manage.py migrate
+docker-compose run tanf python3 manage.py createsuperuser --email timothy.spencer@gsa.gov --noinput
 
 # find the container name:
-CONTAINER=$(docker-compose images | awk '/tanf/ {print $1}')
-
-# Wait until it is running
-echo waiting until "$CONTAINER" is running
-until docker ps -f name="$CONTAINER" -f status=running | grep tanf ; do
-	docker ps
-	sleep 2
-done
+CONTAINER=$(docker-compose images | awk '/_tanf_/ {print $1}')
 
 echo "====================================== Python tests"
 docker exec "$CONTAINER" ./manage.py test

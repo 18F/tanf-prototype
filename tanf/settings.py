@@ -232,19 +232,32 @@ if 'VCAP_SERVICES' in os.environ:
         }
     }
     STATIC_ROOT = os.path.join(BASE_DIR, "static/")
-
-    if 'NOLOGINGOV' not in os.environ:
-        # configure the OIDC provider
-        # When this gets to production, we will probably want to set this to 'logingov'
-        LOGIN_URL = '/openid/openid/logingov_test'
 else:
     # we are in local development mode
     MEDIA_ROOT = '/tmp/tanf'
+    if 'BUCKETNAME' in os.environ:
+        DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+        AWS_STORAGE_BUCKET_NAME = os.environ['BUCKETNAME']
+        AWS_S3_ENDPOINT_URL = os.environ['AWS_S3_ENDPOINT_URL']
+        AWS_S3_REGION_NAME = os.environ['AWS_S3_REGION_NAME']
+        AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+        AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+    if 'POSTGRES_USER' in os.environ:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': os.environ['POSTGRES_DB'],
+                'USER': os.environ['POSTGRES_USER'],
+                'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+                'HOST': os.environ['POSTGRES_HOST'],
+                'PORT': os.environ['POSTGRES_PORT'],
+            }
+        }
 
-    if 'NOLOGINGOV' not in os.environ:
-        # configure the OIDC provider
-        # When this gets to production, we will probably want to set this to 'logingov'
-        LOGIN_URL = '/openid/openid/logingov_test'
+if 'NOLOGINGOV' not in os.environ:
+    # configure the OIDC provider
+    # When this gets to production, we will probably want to set this to 'logingov'
+    LOGIN_URL = '/openid/openid/logingov_test'
 
 
 # Use this to turn on lots of debugging output
