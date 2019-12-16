@@ -4,6 +4,9 @@ import datetime
 
 # Create your models here.
 
+# NOTE:  These fields are kinda lame, in that some of them probably ought to be
+# parsed into integers or something like that rather than being strings.
+
 # T1: https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section1_10_2008.pdf
 class Family(models.Model):
     # metadata
@@ -89,7 +92,8 @@ class Adult(models.Model):
     racehispanic = models.CharField('race/ethnicity: hispanic or latino (item 34a)', max_length=1)
     racenativeamerican = models.CharField('race/ethnicity: american indian or alaska native (item 34b)', max_length=1)
     raceasian = models.CharField('race/ethnicity: asian (item 34c)', max_length=1, default='')
-    raceblack = models.CharField('race/ethnicity: black or african american islander (item 34d)', max_length=1, default='')
+    raceblack = models.CharField('race/ethnicity: black or african american (item 34d)', max_length=1, default='')
+    raceislander = models.CharField('race/ethnicity: islander (item 34e)', max_length=1, default='')
     racewhite = models.CharField('race/ethnicity: white (item 34f)', max_length=1, default='')
     gender = models.IntegerField('gender (item 35)', default=0)
     oasdibenefits = models.CharField('receives disability benefits: received federal disability insurance benefits under the oasdi program (item 36a)', max_length=1, default='')
@@ -100,13 +104,13 @@ class Adult(models.Model):
     maritalstatus = models.CharField('marital status (item 37)', max_length=1, default='')
     relationshiptohh = models.IntegerField('relationship to head of household (item 38)', default=0)
     parentminorchild = models.CharField('parent with minor child in the family (item 39)', max_length=1, default='')
-    pregnantneeds = models.CharField('needs of a pregnant woman (item 40)', max_length=11, default='')
-    educationlevel = models.CharField('education level (item 41)', max_length=12, default='')
+    pregnantneeds = models.CharField('needs of a pregnant woman (item 40)', max_length=1, default='')
+    educationlevel = models.CharField('education level (item 41)', max_length=2, default='')
     citizenship = models.CharField('citizenship/alienage (item 42)', max_length=1, default='')
     coopwithchildsupport = models.CharField('cooperation with child support (item 43)', max_length=1, default='')
-    countablemonths = models.IntegerField('number of countable months toward federal time limit (item 44)', default=0)
-    countablemonthsremaining = models.IntegerField('number of countable months remaining under state/tribe limit (item 45)', default=0)
-    currentmonthexempt = models.CharField('current month exempt from state tirbe time-limit (item 46)', max_length=1, default='')
+    countablemonths = models.CharField('number of countable months toward federal time limit (item 44)', default='', max_length=3)
+    countablemonthsremaining = models.CharField('number of countable months remaining under state/tribe limit (item 45)', default='', max_length=2)
+    currentmonthexempt = models.CharField('current month exempt from state tribe time-limit (item 46)', max_length=1, default='')
     employmentstatus = models.CharField('employment status (item 47)', max_length=1, default='')
     workeligibleindicator = models.CharField('work eligible individual indicator (item 48)', max_length=2, default='')
     workparticipationstatus = models.CharField('work participation status (item 49)', max_length=2, default='')
@@ -141,12 +145,12 @@ class Adult(models.Model):
     otherwork = models.CharField('other work activities (item 62)', max_length=2, default='')
     corehoursforoverallrate = models.CharField('number of deemed core hours for overall rate (item 63)', max_length=2, default='')
     corehoursfortwoparentrate = models.CharField('number of deemed core hours for the two-parent rate (item 64)', max_length=2, default='')
-    earnedincome = models.IntegerField('amount of earned income (item 65)', default=0)
-    unearnedincomeincometaxcredit = models.CharField('amount of unearned income: earned income tax credit (item 66a)', max_length=2, default='')
-    unearnedincomesocialsecurity = models.CharField('amount of unearned income: social security (item 66b)', max_length=2, default='')
-    unearnedincomessi = models.CharField('amount of unearned income: SSI (item 66c)', max_length=2, default='')
-    unearnedincomeworkerscomp = models.CharField('amount of unearned income: workers compensation (item 66d)', max_length=2, default='')
-    unearnedincomeother = models.CharField('amount of unearned income: other unearned income (item 66e)', max_length=2, default='')
+    earnedincome = models.CharField('amount of earned income (item 65)', default='', max_length=4)
+    unearnedincomeincometaxcredit = models.CharField('amount of unearned income: earned income tax credit (item 66a)', max_length=4, default='')
+    unearnedincomesocialsecurity = models.CharField('amount of unearned income: social security (item 66b)', max_length=4, default='')
+    unearnedincomessi = models.CharField('amount of unearned income: SSI (item 66c)', max_length=4, default='')
+    unearnedincomeworkerscomp = models.CharField('amount of unearned income: workers compensation (item 66d)', max_length=4, default='')
+    unearnedincomeother = models.CharField('amount of unearned income: other unearned income (item 66e)', max_length=4, default='')
 
 
 # T3:  https://www.acf.hhs.gov/sites/default/files/ofa/tanf_data_report_section1_10_2008.pdf

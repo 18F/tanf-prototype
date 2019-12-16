@@ -518,9 +518,9 @@ def tanf2json(f):
 
 def section1_familydata_check(data):
     # XXX need to check stuff actually here!
-    reasons = ['forcing false for testing']
+    reasons = []
     status = {
-        'check': False,
+        'check': True,
         'reasons': ", ".join(reasons)
     }
     return status

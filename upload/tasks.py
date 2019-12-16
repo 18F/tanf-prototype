@@ -1,4 +1,5 @@
 import json
+from django.core import serializers
 from django.core.files.storage import default_storage
 from upload.models import Family, Adult, Child, ClosedPerson, AggregatedData, FamiliesByStratumData
 from django.db import transaction
@@ -37,7 +38,7 @@ def importRecords(file=None, user=None):
                 status = {'status': 'Error While Importing'}
                 default_storage.delete(statusfile)
                 default_storage.save(statusfile, ContentFile(json.dumps(status).encode()))
-                raise TANFDataImport('Error While Importing')
+                raise TANFDataImport('Error While Importing ' + repr(e))
 
             print('finished importing', file)
 
@@ -56,22 +57,41 @@ def importRecords(file=None, user=None):
                 # Write out an invalid file with all the invalid stuff.
                 invalidfile = file + '.invalid'
                 with default_storage.open(invalidfile, 'w') as f:
-                    invalidstring = '["invalid: ' + str(invalidcount) + '"]'
-                    f.write(invalidstring)
+                    # invalidstring = '["invalid: ' + str(invalidcount) + '"]'
+                    # f.write(invalidstring)
                     # XXX write out the invalid records
-                    # f.write('[')
-                    # f.write(json.dumps(Family.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
-                    # f.write(',')
-                    # f.write(json.dumps(Adult.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
-                    # f.write(',')
-                    # f.write(json.dumps(Child.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
-                    # f.write(',')
-                    # f.write(json.dumps(ClosedPerson.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
-                    # f.write(',')
-                    # f.write(json.dumps(AggregatedData.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
-                    # f.write(',')
-                    # f.write(json.dumps(FamiliesByStratumData.objects.filter(valid=False).values()), cls=DjangoJSONEncoder)
-                    # f.write(']')
+                    f.write('[')
+
+                    tmplist = Family.objects.filter(valid=False)
+                    tmpjson = serializers.serialize('json', tmplist)
+                    f.write(json.loads(tmpjson))
+                    f.write(',')
+
+                    tmplist = Adult.objects.filter(valid=False)
+                    tmpjson = serializers.serialize('json', tmplist)
+                    f.write(json.loads(tmpjson))
+                    f.write(',')
+
+                    tmplist = Child.objects.filter(valid=False)
+                    tmpjson = serializers.serialize('json', tmplist)
+                    f.write(json.loads(tmpjson))
+                    f.write(',')
+
+                    tmplist = ClosedPerson.objects.filter(valid=False)
+                    tmpjson = serializers.serialize('json', tmplist)
+                    f.write(json.loads(tmpjson))
+                    f.write(',')
+
+                    tmplist = AggregatedData.objects.filter(valid=False)
+                    tmpjson = serializers.serialize('json', tmplist)
+                    f.write(json.loads(tmpjson))
+                    f.write(',')
+
+                    tmplist = FamiliesByStratumData.objects.filter(valid=False)
+                    tmpjson = serializers.serialize('json', tmplist)
+                    f.write(json.loads(tmpjson))
+
+                    f.write(']')
                 raise TANFDataImport('invalid records: rolling back')
             else:
                 status = {'status': 'Imported'}
