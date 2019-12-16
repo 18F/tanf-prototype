@@ -9,7 +9,7 @@ services:
       - POSTGRES_PASSWORD=XXX
       - POSTGRES_DB=mydb
     ports:
-      - "54320:5432"
+      - "5432:5432"
   minio:
     image: minio/minio
     command: server /data
@@ -60,7 +60,7 @@ services:
       - miniobucket
     environment:
       <<: *pythonenv
-    command: python3 manage.py process_tasks
+    command: python3 manage.py process_tasks --log-std
     restart: on-failure
   # zaproxy:
   #   image: owasp/zap2docker-weekly

@@ -35,14 +35,15 @@ if [ "$1" = "setup" ] ; then  echo
 	else
 	  if [ "$2" = "prod" ] ; then
 	    cf create-service aws-rds medium-psql-redundant tanf-db
+		  echo sleeping until db is awake
+		  for i in 1 2 3 ; do
+		  	sleep 60
+		  	echo $i minutes...
+		  done
 	  else
 	    cf create-service aws-rds shared-psql tanf-db
+	    sleep 2
 	  fi
-	  echo sleeping until db is awake
-	  for i in 1 2 3 ; do
-	  	sleep 60
-	  	echo $i minutes...
-	  done
 	fi
 
 	if cf e tanf | grep -q JWT_KEY ; then
@@ -50,9 +51,6 @@ if [ "$1" = "setup" ] ; then  echo
 	else
 		export SETUPJWT="True"
 	fi
-
-	# migrate the db
-	export MIGRATEDB="True"
 fi
 
 generate_jwt_cert() 
@@ -69,6 +67,8 @@ generate_jwt_cert()
 	else
 		echo "once you have gotten your client ID set up with login.gov, you will need to set the OIDC_RP_CLIENT_ID to the proper value"
 		echo "you can do this by running: cf set-env tanf OIDC_RP_CLIENT_ID 'your_client_id'"
+		echo "login.gov will need this cert when you are creating the app:"
+		cat cert.pem
 		cf set-env tanf OIDC_RP_CLIENT_ID "XXX"
 	fi
 }
@@ -81,29 +81,17 @@ fi
 
 # launch the app
 if [ "$1" = "zdt" ] ; then
-	if cf plugins | grep blue-green-deploy >/dev/null ; then
-		echo blue-green-deploy plugin already installed
-	else
-		cf add-plugin-repo CF-Community https://plugins.cloudfoundry.org
-		cf install-plugin blue-green-deploy -r CF-Community -f
-	fi
-
 	# Do a zero downtime deploy.  This requires enough memory for
-	# two tanf apps to exist in the org/space at one time.
-    cf blue-green-deploy tanf -f manifest.yml --delete-old-apps || exit 1
+	# two apps to exist in the org/space at one time.
+	cf v3-zdt-push tanf || exit 1
 else
-	cf push
+	cf v3-push tanf
 
 	# we have to do this after the tanf app is deployed
 	if [ -n "$SETUPJWT" ] ; then
 		generate_jwt_cert
 		cf restart tanf
 	fi
-fi
-
-# do db migrations if requested
-if [ "$1" = "updatedb" ] || [ -n "$MIGRATEDB" ] ; then
-	cf run-task tanf "python manage.py migrate" --name migrate
 fi
 
 # create a superuser if requested
@@ -117,5 +105,3 @@ echo
 echo
 echo "to log into the site, you will want to go to https://${ROUTE}/"
 echo 'Have fun!'
-
-# cf run-task tanf "python manage.py createsuperuser --email timothy.spencer@gsa.gov --noinput"

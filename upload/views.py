@@ -54,7 +54,7 @@ def status(request):
                         status = json.load(f)
                         statusmap[i] = status['status']
                 except (FileNotFoundError, OSError):
-                    statusmap[i] = 'Stuck'
+                    statusmap[i] = 'Queued'
     except (FileNotFoundError, OSError) as e:
         print('FileNotFoundError:  hopefully this is local dev env', e)
 
@@ -101,7 +101,8 @@ def fileinfo(request, file=None):
                   'You will probably want to delete and re-import this file.']
     try:
         with default_storage.open(invalidfile, 'r') as f:
-            invalidata = json.load(f)
+            # invalidata = json.load(f)
+            invalidata = f.read()
     except (FileNotFoundError, OSError):
         invalidata = []
 
@@ -232,21 +233,32 @@ def viewTables(request):
     return render(request, "viewData.html", context)
 
 
+def uniquelist(list):
+    newlist = []
+    for i in list:
+        if i not in newlist:
+            newlist.append(i)
+    return newlist
+
+
 @login_required
 def viewquarter(request):
     # enumerate all the available calendarquarters in all tables.
-    # XXX seems like it might be dangerous at scale, in case it
-    # XXX requires full table scans to fulfill these queries.
     calquarters = []
     for model in apps.all_models['upload']:
         mymodel = apps.get_model('upload', model)
-        calquarters = list(set().union(calquarters, mymodel.objects.values_list('calendar_quarter', flat=True)))
+        for cq in mymodel.objects.values('calendar_quarter').distinct():
+            calquarters.append(cq['calendar_quarter'])
+    calquarters = uniquelist(calquarters)
     calquarters.sort()
     calquarter = request.GET.get('calquarter')
-    if calquarter is None and calquarters:
-        calquarter = calquarters[0]
+    if calquarter is None:
+        try:
+            calquarter = calquarters[0]
+        except IndexError:
+            calquarter = 0
     else:
-        calquarter = 0
+        calquarter = int(calquarter)
 
     # select all data for the selected calquarter
     qslist = []

@@ -67,8 +67,17 @@ class CheckUI(TestCase):
         response = self.client.get(page)
         self.assertRedirects(response, '/admin/users/tanfuser/', status_code=302, target_status_code=200)
 
-    def test_upload(self):
+    def test_upload_exists(self):
         """upload page has proper data"""
         self.client.force_login(self.user)
         response = self.client.get("/")
         self.assertIn(b'Upload to the TANF Data Reporting system', response.content)
+
+    def test_upload_data(self):
+        """upload page accepts data, sends us to the Status page, and status page has a file"""
+        self.client.force_login(self.user)
+        with open('upload/fixtures/testdata.txt') as f:
+            response = self.client.post("/", {'name': 'myfile', 'myfile': f}, follow=True)
+            self.assertIn(b'<th>Status</th>', response.content)
+            self.assertIn(b'tanfuser@gsa.gov_', response.content)
+            self.assertIn(b'_testdata.txt', response.content)
