@@ -66,16 +66,6 @@ jobs:
 
 workflows:
   version: 2
-  hourly:
-    jobs:
-      - process_tasks
-    triggers:
-      - schedule:
-          cron: "30 * * * *"
-          filters:
-            branches:
-              only:
-                - master
   build_test_deploy:
     jobs:
       - build
