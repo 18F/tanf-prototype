@@ -11,6 +11,13 @@ service_exists()
 }
 
 if [ "$1" = "setup" ] ; then  echo
+	if cf app tanf >/dev/null ; then
+		echo tanf app already set up
+	else
+		cf v3-create-app tanf
+		cf v3-apply-manifest -f manifest.yml
+	fi
+
 	# create services (if needed)
 	if service_exists "tanf-storage" ; then
 	  echo tanf-storage already created
