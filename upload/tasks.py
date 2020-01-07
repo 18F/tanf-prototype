@@ -6,7 +6,6 @@ from django.db import transaction
 from background_task import background
 from upload.tanfDataProcessing import tanf2db
 from django.core.files.base import ContentFile
-from django.core.serializers.json import DjangoJSONEncoder
 
 
 # This is for tasks that need to be run in the background.
