@@ -184,7 +184,6 @@ else:
         else:
             # We are not a web task, so we have no appuri
             appuri = ''
-            print(os.environ('VCAP_SERVICES'))
     else:
         # we are running locally
         appuri = 'http://localhost:8000/openid/callback/login/'
@@ -238,6 +237,7 @@ if 'VCAP_SERVICES' in os.environ:
         }
     }
     STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+    print('configured for cloud.gov')
 else:
     # we are in local development mode
     MEDIA_ROOT = '/tmp/tanf'
@@ -259,6 +259,7 @@ else:
                 'PORT': os.environ['POSTGRES_PORT'],
             }
         }
+    print('configured for local development')
 
 if 'NOLOGINGOV' not in os.environ:
     # configure the OIDC provider
