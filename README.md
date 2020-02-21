@@ -77,9 +77,10 @@ To enable this, go to [CircleCI](https://circleci.com/), log in, and click on "A
 Find this github repo and enable builds on it.  Then, add the following environment variables
 to the build settings:
 * `CF_ORG`:  This is your cloud.gov org that you are deploying this to.
-* `CF_SPACE`:  This is the space in cloud.gov that you wish to deploy this to.
-* `CF_USERNAME`:  This is the username that you can get with the `cf service-key tanf deployer` command
-* `CF_PASSWORD`:  This is the password that you can get with the `cf service-key tanf deployer` command
+* `CF_SPACE`:  This is the space in cloud.gov that you wish to deploy this to, like `tanf-dev`.
+* `CF_USERNAME`:  This is the username that you can get with the `cf service-key tanf-keys deployer` command
+* `CF_PASSWORD`:  This is the password that you can get with the `cf service-key tanf-keys deployer` command
+* `CGHOSTNAME`:  This is the hostname that will be routed to the app, like `https://CGHOSTNAME.app.cloud.gov/`
 
 Once all this is set up, you can create branches and commit code to them,
 and it will run the tests for you  You can see the results in github, and you can click through to
