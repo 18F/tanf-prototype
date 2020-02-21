@@ -33,7 +33,10 @@ You can also deploy this application on [cloud.gov](https://cloud.gov/).
 * You will need to get [credentials for cloud.gov](https://cloud.gov/signup/), as
   well as [set up the command line cf utility](https://cloud.gov/docs/getting-started/setup/#set-up-the-command-line).
 * Once you have your credentials and are logged in, `./deploy-cloudgov.sh setup`
-  sets up all the services required and sets up the database.
+  sets up all the services required and sets up the database.  If you
+  set the `CGHOSTNAME` environment variable, it will create a route for the app
+  so that you can access it at https://CGHOSTNAME.app.cloud.gov/.  Otherwise,
+  it will be deployed by default at https://tanf.app.cloud.gov/.
 * If you want to deploy this with login.gov authentication, you will need to
   [register with login.gov as a developer](https://developers.login.gov).
   You will also need to create a new test app in the integration dashboard for
@@ -44,12 +47,11 @@ You can also deploy this application on [cloud.gov](https://cloud.gov/).
   	  above as the public certificate.
   	* Create an Issuer ID for your app.
   	* Add URLs for "Return to app URL" and "Redirect URIs".  The former should be
-  	  something like https://tanf-fantastic-waterbuck.app.cloud.gov/about/, and the
-  	  latter should have something like https://tanf-fantastic-waterbuck.app.cloud.gov/openid/callback/login/
-  	  and https://tanf-fantastic-waterbuck.app.cloud.gov/openid/callback/logout/.
-  You will also need to set some environment variables:
+  	  something like https://CGHOSTNAME.app.cloud.gov/about/, and the
+  	  latter should have something like https://CGHOSTNAME.app.cloud.gov/openid/callback/login/
+  	  and https://CGHOSTNAME.app.cloud.gov/openid/callback/logout/.
+  You will also need to set an environment variable:
   	* `cf set-env tanf OIDC_RP_CLIENT_ID <Issuer ID>`
-  	* `cf set-env tanf JWT_KEY "$(cat key.pem)"`
 * Create a superuser for you to log in with:  `./deploy-cloudgov.sh createsuperuser your@email.gov`
 * If you want to deploy without login.gov integration:  `cf set-env tanf NOLOGINGOV True`
   Note:  this will make it so that anybody can supply an email address and password and

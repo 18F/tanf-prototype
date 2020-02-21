@@ -8,7 +8,6 @@ applications:
     - tanf-db
   memory: 128M
   instances: 1
-  random-route: true
   command: python3 manage.py collectstatic --noinput ; gunicorn -b :8080 tanf.wsgi
   env:
     DISABLE_COLLECTSTATIC: 1

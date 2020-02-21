@@ -4,6 +4,9 @@
 # and then launch everything.
 #
 
+# This is the hostname for the route set for the
+CGHOSTNAME="${CGHOSTNAME:-tanf}"
+
 # function to check if a service exists
 service_exists()
 {
@@ -11,13 +14,6 @@ service_exists()
 }
 
 if [ "$1" = "setup" ] ; then  echo
-	if cf app tanf >/dev/null ; then
-		echo tanf app already set up
-	else
-		cf v3-create-app tanf
-		cf v3-apply-manifest -f manifest.yml
-	fi
-
 	# create services (if needed)
 	if service_exists "tanf-storage" ; then
 	  echo tanf-storage already created
@@ -32,9 +28,9 @@ if [ "$1" = "setup" ] ; then  echo
 	if service_exists "tanf-deployer" ; then
 	  echo tanf-deployer already created
 	else
-	  cf create-service cloud-gov-service-account space-deployer tanf
-	  cf create-service-key tanf deployer
-	  echo "to get the CF_USERNAME and CF_PASSWORD, execute 'cf service-key tanf deployer'"
+	  cf create-service cloud-gov-service-account space-deployer tanf-keys
+	  cf create-service-key tanf-keys deployer
+	  echo "to get the CF_USERNAME and CF_PASSWORD, execute 'cf service-key tanf-keys deployer'"
 	fi
 
 	if service_exists "tanf-db" ; then
@@ -53,6 +49,17 @@ if [ "$1" = "setup" ] ; then  echo
 	  fi
 	fi
 
+	# set up app
+	if cf app tanf >/dev/null 2>&1 ; then
+		echo tanf app already set up
+	else
+		cf v3-create-app tanf
+		cf v3-apply-manifest -f manifest.yml
+		# cf bind-service tanf tanf-db
+		# cf bind-service tanf tanf-storage
+	fi
+
+	# set up JWT key if needed
 	if cf e tanf | grep -q JWT_KEY ; then
 		echo jwt cert already created
 	else
@@ -63,7 +70,7 @@ fi
 generate_jwt_cert() 
 {
 	echo "regenerating JWT cert/key"
-	openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -sha256
+	yes 'XX' | openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -sha256
 	cf set-env tanf JWT_CERT "$(cat cert.pem)"
 	cf set-env tanf JWT_KEY "$(cat key.pem)"
 
@@ -90,9 +97,9 @@ fi
 if [ "$1" = "zdt" ] ; then
 	# Do a zero downtime deploy.  This requires enough memory for
 	# two apps to exist in the org/space at one time.
-	cf v3-zdt-push tanf || exit 1
+	cf v3-zdt-push tanf --no-route || exit 1
 else
-	cf v3-push tanf
+	cf v3-push tanf --no-route
 
 	# we have to do this after the tanf app is deployed
 	if [ -n "$SETUPJWT" ] ; then
@@ -100,6 +107,7 @@ else
 		cf restart tanf
 	fi
 fi
+cf map-route tanf app.cloud.gov --hostname "$CGHOSTNAME"
 
 # create a superuser if requested
 if [ "$1" = "createsuperuser" ] && [ -n "$2" ] ; then
@@ -107,8 +115,7 @@ if [ "$1" = "createsuperuser" ] && [ -n "$2" ] ; then
 fi
 
 # tell people where to go
-ROUTE="$(cf apps | grep tanf | awk '{print $6}')"
 echo
 echo
-echo "to log into the site, you will want to go to https://${ROUTE}/"
+echo "to log into the site, you will want to go to https://${CGHOSTNAME}.app.cloud.gov/"
 echo 'Have fun!'
