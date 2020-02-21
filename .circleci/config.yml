@@ -51,8 +51,17 @@ jobs:
           name: deploy to cloud.gov
           command: |
             # If we do not specify a space, then deploy to the branch that we are on.
+            # Also map certain branches to spaces.
             # This lets you have dev/staging/master branches that automatically go to the right place.
-            if [ -z "$CF_SPACE" ] ; then
+            if [ -n "$CF_SPACE" ] ; then
+              echo "CF_SPACE is hardcoded already"
+            elif [ "$CIRCLE_BRANCH" = master ] ; then
+              export CF_SPACE="tanf-prod"
+            elif [ "$CIRCLE_BRANCH" = staging ] ; then
+              export CF_SPACE="tanf-staging"
+            elif [ "$CIRCLE_BRANCH" = dev ] ; then
+              export CF_SPACE="tanf-dev"
+            else
               export CF_SPACE="$CIRCLE_BRANCH"
             fi
             if [ -z "$CF_ORG" ] ; then
@@ -74,6 +83,6 @@ workflows:
             - build
           filters:
             branches:
-              # Add more branches here if you want dev/staging/whatever environments
+              # Add branches here if you want more dev/staging/whatever environments to get autodeployed
               only:
                 - master
